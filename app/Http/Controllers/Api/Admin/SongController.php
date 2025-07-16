@@ -42,8 +42,8 @@ class SongController extends Controller
         ]);
 
         $song = auth()->user()->songs()->create($validated + [
-            'slug' => Str::slug($request->title),
             'code' => Song::max('code') + 1,
+            'slug' => Str::slug($request->title) . '-' . (Song::max('code') + 1),
         ]);
 
         return response()->json($song, 201);
