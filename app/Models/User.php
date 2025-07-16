@@ -46,4 +46,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function songs()
+    {
+        return $this->morphMany(Song::class, 'createable');
+    }
 }
