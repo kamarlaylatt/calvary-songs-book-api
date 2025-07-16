@@ -72,7 +72,7 @@ class SongController extends Controller
             'music_notes' => 'nullable|string',
         ]);
 
-        $song->update($validated + ['slug' => Str::slug($request->title)]);
+        $song->update($validated + ['slug' => Str::slug($request->title) . '-' . $song->code]);
 
         return response()->json($song);
     }
