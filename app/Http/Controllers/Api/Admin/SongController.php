@@ -16,9 +16,11 @@ class SongController extends Controller
     {
         $songs = Song::query()
             ->when($request->search, function ($query, $search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('song_writer', 'like', "%{$search}%")
-                    ->orWhere('lyrics', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->whereFullText(['title'], $search, ['mode' => 'boolean']);
+                })->orWhere(function ($q) use ($search) {
+                    $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
+                });
             })
             ->with('style')
             ->paginate(15);
@@ -41,7 +43,9 @@ class SongController extends Controller
             'music_notes' => 'nullable|string',
         ]);
 
-        $song = auth()->user()->songs()->create($validated + [
+        /** @var \App\Models\Admin $admin */
+        $admin = auth('admin')->user();
+        $song = $admin->songs()->create($validated + [
             'code' => Song::max('code') + 1,
             'slug' => Str::slug($request->title) . '-' . (Song::max('code') + 1),
         ]);
