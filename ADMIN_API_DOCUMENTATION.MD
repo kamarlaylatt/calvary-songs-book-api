@@ -18,6 +18,14 @@ This documentation provides details about the available API endpoints for admini
 - **Response:**
   ```json
   {
+    "message": "Login successful",
+    "admin": {
+      "id": 1,
+      "name": "Admin Name",
+      "email": "admin@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
     "token": "your-api-token"
   }
   ```
@@ -27,12 +35,30 @@ This documentation provides details about the available API endpoints for admini
 - **Endpoint:** `POST /api/admin/logout`
 - **Description:** Logs out the authenticated admin user.
 - **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "message": "Logout successful"
+  }
+  ```
 
 ### Admin Detail
 
 - **Endpoint:** `GET /api/admin`
 - **Description:** Retrieves the details of the authenticated admin user.
 - **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "admin": {
+      "id": 1,
+      "name": "Admin Name",
+      "email": "admin@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  }
+  ```
 
 ## Songs
 
@@ -43,7 +69,62 @@ This documentation provides details about the available API endpoints for admini
 - **Authentication:** Bearer Token
 - **Query Parameters:**
   - `search` (optional): A string to search for in the song title, songwriter, or lyrics.
-- **Response:** A paginated JSON object of songs.
+- **Response:** A paginated JSON object with the following structure:
+  ```json
+  {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 1,
+        "admin_id": 1,
+        "style_id": 1,
+        "code": 1,
+        "slug": "new-song-title-1",
+        "title": "New Song Title",
+        "youtube": "https://www.youtube.com/watch?v=...",
+        "description": "A description of the song.",
+        "song_writer": "Songwriter Name",
+        "lyrics": "The lyrics of the song.",
+        "music_notes": "The music notes of the song.",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z",
+        "style": {
+          "id": 1,
+          "name": "Style Name",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
+      }
+    ],
+    "first_page_url": "http://localhost/api/admin/songs?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://localhost/api/admin/songs?page=1",
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "http://localhost/api/admin/songs?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "next_page_url": null,
+    "path": "http://localhost/api/admin/songs",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 1,
+    "total": 1
+  }
+  ```
 
 ### Create Song
 
@@ -62,14 +143,54 @@ This documentation provides details about the available API endpoints for admini
     "music_notes": "The music notes of the song."
   }
   ```
-- **Response:** The newly created song object.
+- **Response:** The newly created song object with auto-generated fields:
+  ```json
+  {
+    "id": 1,
+    "admin_id": 1,
+    "style_id": 1,
+    "code": 1,
+    "slug": "new-song-title-1",
+    "title": "New Song Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "A description of the song.",
+    "song_writer": "Songwriter Name",
+    "lyrics": "The lyrics of the song.",
+    "music_notes": "The music notes of the song.",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z"
+  }
+  ```
 
 ### Show Song
 
 - **Endpoint:** `GET /api/admin/songs/{song}`
 - **Description:** Retrieves a single song by its ID.
 - **Authentication:** Bearer Token
-- **Response:** The song object.
+- **Response:** The song object with related style:
+  ```json
+  {
+    "id": 1,
+    "admin_id": 1,
+    "style_id": 1,
+    "code": 1,
+    "slug": "new-song-title-1",
+    "title": "New Song Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "A description of the song.",
+    "song_writer": "Songwriter Name",
+    "lyrics": "The lyrics of the song.",
+    "music_notes": "The music notes of the song.",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z",
+    "style": {
+      "id": 1,
+      "name": "Style Name",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  }
+  ```
 
 ### Update Song
 
@@ -77,7 +198,24 @@ This documentation provides details about the available API endpoints for admini
 - **Description:** Updates an existing song.
 - **Authentication:** Bearer Token
 - **Request Body:** (same as create, but fields are optional)
-- **Response:** The updated song object.
+- **Response:** The updated song object:
+  ```json
+  {
+    "id": 1,
+    "admin_id": 1,
+    "style_id": 1,
+    "code": 1,
+    "slug": "new-song-title-1",
+    "title": "Updated Song Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "Updated description",
+    "song_writer": "Updated Songwriter",
+    "lyrics": "Updated lyrics",
+    "music_notes": "Updated music notes",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:51:20.000000Z"
+  }
+  ```
 
 ### Delete Song
 
@@ -93,7 +231,23 @@ This documentation provides details about the available API endpoints for admini
 - **Endpoint:** `GET /api/admin/styles`
 - **Description:** Retrieves a list of all styles.
 - **Authentication:** Bearer Token
-- **Response:** A JSON array of style objects.
+- **Response:** A JSON array of style objects:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Style 1",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    {
+      "id": 2,
+      "name": "Style 2",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  ]
+  ```
 
 ### Create Style
 
@@ -106,14 +260,30 @@ This documentation provides details about the available API endpoints for admini
     "name": "New Style Name"
   }
   ```
-- **Response:** The newly created style object.
+- **Response:** The newly created style object:
+  ```json
+  {
+    "id": 3,
+    "name": "New Style Name",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z"
+  }
+  ```
 
 ### Show Style
 
 - **Endpoint:** `GET /api/admin/styles/{style}`
 - **Description:** Retrieves a single style by its ID.
 - **Authentication:** Bearer Token
-- **Response:** The style object.
+- **Response:** The style object:
+  ```json
+  {
+    "id": 1,
+    "name": "Style Name",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z"
+  }
+  ```
 
 ### Update Style
 
@@ -126,7 +296,15 @@ This documentation provides details about the available API endpoints for admini
     "name": "Updated Style Name"
   }
   ```
-- **Response:** The updated style object.
+- **Response:** The updated style object:
+  ```json
+  {
+    "id": 1,
+    "name": "Updated Style Name",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:51:20.000000Z"
+  }
+  ```
 
 ### Delete Style
 
