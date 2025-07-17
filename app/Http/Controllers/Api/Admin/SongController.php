@@ -17,9 +17,10 @@ class SongController extends Controller
         $songs = Song::query()
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->whereFullText(['title'], $search, ['mode' => 'boolean']);
+                    $q->where('title', 'like', "%{$search}%");
                 })->orWhere(function ($q) use ($search) {
-                    $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
+                    $q->where('lyrics', 'like', "%{$search}%");
+                    // $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
                 });
             })
             ->with('style')
