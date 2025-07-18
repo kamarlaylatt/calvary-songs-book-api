@@ -9,9 +9,9 @@ class CategorySeeder extends Seeder
 {
     public function run()
     {
-        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        // \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
         Category::truncate();
-        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        // \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         $categories = [
             ['name' => 'Worship', 'description' => 'Songs for worship services'],
