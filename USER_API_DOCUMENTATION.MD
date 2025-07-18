@@ -88,7 +88,16 @@ This documentation provides details about the available API endpoints for users.
           "name": "Style Name",
           "created_at": "2025-07-17T05:50:20.000000Z",
           "updated_at": "2025-07-17T05:50:20.000000Z"
-        }
+        },
+        "categories": [
+          {
+            "id": 1,
+            "name": "Category Name",
+            "slug": "category-name",
+            "created_at": "2025-07-18T09:39:48.000000Z",
+            "updated_at": "2025-07-18T09:39:48.000000Z"
+          }
+        ]
       }
     ],
     "first_page_url": "http://localhost/api/songs?page=1",
@@ -161,6 +170,15 @@ This documentation provides details about the available API endpoints for users.
       "created_at": "2025-07-17T05:50:20.000000Z",
       "updated_at": "2025-07-17T05:50:20.000000Z"
     },
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category Name",
+        "slug": "category-name",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
     "created_at": "2025-07-17T05:50:20.000000Z",
