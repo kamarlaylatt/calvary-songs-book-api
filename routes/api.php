@@ -10,9 +10,10 @@ Route::prefix('admin')->group(function () {
 
 Route::post('/login', [AuthController::class, 'login']);
 
-// Public song APIs
+// Public APIs
 Route::get('/songs', [SongController::class, 'index']);
 Route::get('/songs/{song:slug}', [SongController::class, 'show']);
+Route::get('/categories', [SongController::class, 'categories']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

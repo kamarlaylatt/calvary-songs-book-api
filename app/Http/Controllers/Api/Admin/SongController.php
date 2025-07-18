@@ -23,7 +23,7 @@ class SongController extends Controller
                     // $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
                 });
             })
-            ->with('style')
+            ->with(['style', 'categories'])
             ->paginate(15);
 
         return response()->json($songs);
@@ -42,6 +42,8 @@ class SongController extends Controller
             'style_id' => 'required|exists:styles,id',
             'lyrics' => 'required|string',
             'music_notes' => 'nullable|string',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
         ]);
 
         /** @var \App\Models\Admin $admin */
@@ -51,7 +53,11 @@ class SongController extends Controller
             'slug' => Str::slug($request->title) . '-' . (Song::max('code') + 1),
         ]);
 
-        return response()->json($song, 201);
+        if ($request->has('category_ids')) {
+            $song->categories()->sync($request->category_ids);
+        }
+
+        return response()->json($song->load(['style', 'categories']), 201);
     }
 
     /**
@@ -59,7 +65,7 @@ class SongController extends Controller
      */
     public function show(Song $song)
     {
-        return response()->json($song->load('style'));
+        return response()->json($song->load(['style', 'categories']));
     }
 
     /**
@@ -75,11 +81,17 @@ class SongController extends Controller
             'style_id' => 'sometimes|required|exists:styles,id',
             'lyrics' => 'sometimes|required|string',
             'music_notes' => 'nullable|string',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
         ]);
 
         $song->update($validated + ['slug' => Str::slug($request->title) . '-' . $song->code]);
 
-        return response()->json($song);
+        if ($request->has('category_ids')) {
+            $song->categories()->sync($request->category_ids);
+        }
+
+        return response()->json($song->load(['style', 'categories']));
     }
 
     /**

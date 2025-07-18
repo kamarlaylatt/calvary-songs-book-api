@@ -93,7 +93,17 @@ This documentation provides details about the available API endpoints for admini
           "name": "Style Name",
           "created_at": "2025-07-17T05:50:20.000000Z",
           "updated_at": "2025-07-17T05:50:20.000000Z"
-        }
+        },
+        "categories": [
+          {
+            "id": 1,
+            "name": "Category 1",
+            "slug": "category-1",
+            "description": "Category description",
+            "created_at": "2025-07-18T09:39:48.000000Z",
+            "updated_at": "2025-07-18T09:39:48.000000Z"
+          }
+        ]
       }
     ],
     "first_page_url": "http://localhost/api/admin/songs?page=1",
@@ -140,7 +150,8 @@ This documentation provides details about the available API endpoints for admini
     "song_writer": "Songwriter Name",
     "style_id": 1,
     "lyrics": "The lyrics of the song.",
-    "music_notes": "The music notes of the song."
+    "music_notes": "The music notes of the song.",
+    "category_ids": [1, 2]
   }
   ```
 - **Response:** The newly created song object with auto-generated fields:
@@ -158,7 +169,25 @@ This documentation provides details about the available API endpoints for admini
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
     "created_at": "2025-07-17T05:50:20.000000Z",
-    "updated_at": "2025-07-17T05:50:20.000000Z"
+    "updated_at": "2025-07-17T05:50:20.000000Z",
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category 1",
+        "slug": "category-1",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      },
+      {
+        "id": 2,
+        "name": "Category 2",
+        "slug": "category-2",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ]
   }
   ```
 
@@ -188,7 +217,17 @@ This documentation provides details about the available API endpoints for admini
       "name": "Style Name",
       "created_at": "2025-07-17T05:50:20.000000Z",
       "updated_at": "2025-07-17T05:50:20.000000Z"
-    }
+    },
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category 1",
+        "slug": "category-1",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ]
   }
   ```
 
@@ -213,7 +252,33 @@ This documentation provides details about the available API endpoints for admini
     "lyrics": "Updated lyrics",
     "music_notes": "Updated music notes",
     "created_at": "2025-07-17T05:50:20.000000Z",
-    "updated_at": "2025-07-17T05:51:20.000000Z"
+    "updated_at": "2025-07-17T05:51:20.000000Z",
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category 1",
+        "slug": "category-1",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      },
+      {
+        "id": 2,
+        "name": "Category 2",
+        "slug": "category-2",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      },
+      {
+        "id": 3,
+        "name": "Category 3",
+        "slug": "category-3",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ]
   }
   ```
 
@@ -310,5 +375,122 @@ This documentation provides details about the available API endpoints for admini
 
 - **Endpoint:** `DELETE /api/admin/styles/{style}`
 - **Description:** Deletes a style.
+- **Authentication:** Bearer Token
+- **Response:** `204 No Content`
+
+## Categories
+
+### List Categories
+
+- **Endpoint:** `GET /api/admin/categories`
+- **Description:** Retrieves a paginated list of categories.
+- **Authentication:** Bearer Token
+- **Response:** A paginated JSON object with category data:
+  ```json
+  {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 1,
+        "name": "Category Name",
+        "slug": "category-name",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "first_page_url": "http://localhost/api/admin/categories?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://localhost/api/admin/categories?page=1",
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "http://localhost/api/admin/categories?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "next_page_url": null,
+    "path": "http://localhost/api/admin/categories",
+    "per_page": 10,
+    "prev_page_url": null,
+    "to": 1,
+    "total": 1
+  }
+  ```
+
+### Create Category
+
+- **Endpoint:** `POST /api/admin/categories`
+- **Description:** Creates a new category.
+- **Authentication:** Bearer Token
+- **Request Body:**
+  ```json
+  {
+    "name": "New Category Name",
+    "description": "Optional category description"
+  }
+  ```
+- **Response:** The newly created category object:
+  ```json
+  {
+    "id": 1,
+    "name": "New Category Name",
+    "slug": "new-category-name",
+    "description": "Optional category description",
+    "created_at": "2025-07-18T09:39:48.000000Z",
+    "updated_at": "2025-07-18T09:39:48.000000Z"
+  }
+  ```
+
+### Show Category
+
+- **Endpoint:** `GET /api/admin/categories/{category}`
+- **Description:** Retrieves a single category by its ID.
+- **Authentication:** Bearer Token
+- **Response:** The category object:
+  ```json
+  {
+    "id": 1,
+    "name": "Category Name",
+    "slug": "category-name",
+    "description": "Category description",
+    "created_at": "2025-07-18T09:39:48.000000Z",
+    "updated_at": "2025-07-18T09:39:48.000000Z"
+  }
+  ```
+
+### Update Category
+
+- **Endpoint:** `PUT/PATCH /api/admin/categories/{category}`
+- **Description:** Updates an existing category.
+- **Authentication:** Bearer Token
+- **Request Body:** (same as create, but fields are optional)
+- **Response:** The updated category object:
+  ```json
+  {
+    "id": 1,
+    "name": "Updated Category Name",
+    "slug": "updated-category-name",
+    "description": "Updated description",
+    "created_at": "2025-07-18T09:39:48.000000Z",
+    "updated_at": "2025-07-18T09:40:48.000000Z"
+  }
+  ```
+
+### Delete Category
+
+- **Endpoint:** `DELETE /api/admin/categories/{category}`
+- **Description:** Deletes a category.
 - **Authentication:** Bearer Token
 - **Response:** `204 No Content`

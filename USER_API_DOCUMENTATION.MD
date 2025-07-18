@@ -121,6 +121,26 @@ This documentation provides details about the available API endpoints for users.
   }
   ```
 
+## Categories
+
+### List Categories
+
+- **Endpoint:** `GET /api/categories`
+- **Description:** Retrieves a list of all categories.
+- **Response:** A JSON array of category objects:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Category Name",
+      "slug": "category-name",
+      "description": "Category description",
+      "created_at": "2025-07-18T09:39:48.000000Z",
+      "updated_at": "2025-07-18T09:39:48.000000Z"
+    }
+  ]
+  ```
+
 ### Show Song
 
 - **Endpoint:** `GET /api/songs/{song:slug}`

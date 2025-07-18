@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Song;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class SongController extends Controller
@@ -24,7 +25,7 @@ class SongController extends Controller
             ->when($request->style_id, function ($query, $styleId) {
                 $query->where('style_id', $styleId);
             })
-            ->with('style')
+            ->with(['style', 'categories'])
             ->select(['id', 'code', 'title', 'slug', 'youtube', 'description', 'song_writer', 'style_id'])
             ->paginate(15);
 
@@ -48,10 +49,20 @@ class SongController extends Controller
             'description' => $song->description,
             'song_writer' => $song->song_writer,
             'style' => $song->style,
+            'categories' => $song->categories,
             'lyrics' => $song->lyrics,
             'music_notes' => $song->music_notes,
             'created_at' => $song->created_at,
             'updated_at' => $song->updated_at,
         ]);
+    }
+
+    /**
+     * Display a listing of all categories.
+     */
+    public function categories()
+    {
+        $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+        return response()->json($categories);
     }
 }
