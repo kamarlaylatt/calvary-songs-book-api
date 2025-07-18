@@ -26,8 +26,15 @@ class SongController extends Controller
                 $query->where('style_id', $styleId);
             })
             ->with(['style', 'categories'])
-            ->select(['id', 'code', 'title', 'slug', 'youtube', 'description', 'song_writer', 'style_id'])
-            ->paginate(15);
+            ->select(['id', 'code', 'title', 'slug', 'youtube', 'description', 'song_writer', 'style_id']);
+
+        if ($request->has('limit')) {
+            $songs = $songs->paginate($request->limit);
+        } else {
+            $songs = [
+                'data' => $songs->get()
+            ];
+        }
 
         return response()->json($songs);
     }

@@ -65,11 +65,13 @@ This documentation provides details about the available API endpoints for users.
 ### List Songs
 
 - **Endpoint:** `GET /api/songs`
-- **Description:** Retrieves a paginated list of songs.
+- **Description:** Retrieves a list of songs. Returns paginated response when 'limit' parameter is provided, otherwise returns all matching songs in a simple array.
 - **Query Parameters:**
   - `search` (optional): A string to search for in the song title or lyrics
   - `style_id` (optional): Filter songs by style ID
-- **Response:** A paginated JSON object with the following structure:
+  - `limit` (optional): Number of items per page (enables pagination)
+  
+#### Paginated Response (when 'limit' parameter is provided):
   ```json
   {
     "current_page": 1,
@@ -129,6 +131,39 @@ This documentation provides details about the available API endpoints for users.
     "total": 1
   }
   ```
+
+#### Simple Array Response (when no 'limit' parameter):
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "code": 1,
+      "slug": "new-song-title-1",
+      "title": "New Song Title",
+      "youtube": "https://www.youtube.com/watch?v=...",
+      "description": "A description of the song.",
+      "song_writer": "Songwriter Name",
+      "style_id": 1,
+      "style": {
+        "id": 1,
+        "name": "Style Name",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      },
+      "categories": [
+        {
+          "id": 1,
+          "name": "Category Name",
+          "slug": "category-name",
+          "created_at": "2025-07-18T09:39:48.000000Z",
+          "updated_at": "2025-07-18T09:39:48.000000Z"
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Categories
 

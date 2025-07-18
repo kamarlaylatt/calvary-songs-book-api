@@ -33,8 +33,8 @@ class ImportSongs extends Command
         $this->info('Importing songs...');
 
         // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Song::truncate();
-        Style::truncate();
+        // Song::truncate();
+        // Style::truncate();
         // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $csvFile = fopen(base_path("songs.csv"), "r");
