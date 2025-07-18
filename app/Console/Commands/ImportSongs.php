@@ -32,11 +32,10 @@ class ImportSongs extends Command
     {
         $this->info('Importing songs...');
 
-        // Disable foreign key checks for PostgreSQL
-        DB::statement('SET session_replication_role = replica;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Song::truncate();
         Style::truncate();
-        DB::statement('SET session_replication_role = DEFAULT;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $csvFile = fopen(base_path("songs.csv"), "r");
 
