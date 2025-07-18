@@ -13,12 +13,16 @@ class StyleSeeder extends Seeder
      */
     public function run(): void
     {
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        Style::truncate();
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
         $styles = [
-            ['name' => 'Worship'],
-            ['name' => 'Praise'],
-            ['name' => 'Hymn'],
-            ['name' => 'Gospel'],
-            ['name' => 'Instrumental'],
+            ['name' => 'Country'],
+            ['name' => 'Slow Go Go'],
+            ['name' => 'Rock'],
+            ['name' => 'Blues'],
+            ['name' => 'House'],
         ];
 
         foreach ($styles as $style) {
