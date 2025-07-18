@@ -1,0 +1,148 @@
+# User API Documentation
+
+This documentation provides details about the available API endpoints for users.
+
+## Authentication
+
+### Login
+
+- **Endpoint:** `POST /api/login`
+- **Description:** Authenticates a user and returns an API token.
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "password"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Login successful",
+    "user": {
+      "id": 1,
+      "name": "User Name",
+      "email": "user@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    "token": "your-api-token"
+  }
+  ```
+
+### Logout
+
+- **Endpoint:** `POST /api/logout`
+- **Description:** Logs out the authenticated user.
+- **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "message": "Logout successful"
+  }
+  ```
+
+### User Detail
+
+- **Endpoint:** `GET /api/user`
+- **Description:** Retrieves the details of the authenticated user.
+- **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "user": {
+      "id": 1,
+      "name": "User Name",
+      "email": "user@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  }
+  ```
+
+## Songs
+
+### List Songs
+
+- **Endpoint:** `GET /api/songs`
+- **Description:** Retrieves a paginated list of songs.
+- **Query Parameters:**
+  - `search` (optional): A string to search for in the song title or lyrics
+  - `style_id` (optional): Filter songs by style ID
+- **Response:** A paginated JSON object with the following structure:
+  ```json
+  {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 1,
+        "code": 1,
+        "slug": "new-song-title-1",
+        "title": "New Song Title",
+        "youtube": "https://www.youtube.com/watch?v=...",
+        "description": "A description of the song.",
+        "song_writer": "Songwriter Name",
+        "style_id": 1,
+        "style": {
+          "id": 1,
+          "name": "Style Name",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
+      }
+    ],
+    "first_page_url": "http://localhost/api/songs?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://localhost/api/songs?page=1",
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "http://localhost/api/songs?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "next_page_url": null,
+    "path": "http://localhost/api/songs",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 1,
+    "total": 1
+  }
+  ```
+
+### Show Song
+
+- **Endpoint:** `GET /api/songs/{song:slug}`
+- **Description:** Retrieves a single song by its slug.
+- **Response:** The song object with full details:
+  ```json
+  {
+    "id": 1,
+    "code": 1,
+    "title": "New Song Title",
+    "slug": "new-song-title-1",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "A description of the song.",
+    "song_writer": "Songwriter Name",
+    "style": {
+      "id": 1,
+      "name": "Style Name",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    "lyrics": "The lyrics of the song.",
+    "music_notes": "The music notes of the song.",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z"
+  }
