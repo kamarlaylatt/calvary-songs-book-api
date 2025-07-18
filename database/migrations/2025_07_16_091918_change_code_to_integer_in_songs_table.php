@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('songs', function (Blueprint $table) {
-            $table->integer('code')->using('code::integer')->unique()->change();
+            $table->integer('code')->using('CAST(code AS integer)')->unique()->change();
         });
     }
 
