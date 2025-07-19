@@ -25,8 +25,7 @@ class SongController extends Controller
             ->when($request->style_id, function ($query, $styleId) {
                 $query->where('style_id', $styleId);
             })
-            ->with(['style', 'categories'])
-            ->select(['id', 'code', 'title', 'slug', 'youtube', 'description', 'song_writer', 'style_id']);
+            ->with(['style', 'categories']);
 
         if ($request->has('limit')) {
             $songs = $songs->paginate($request->limit);
