@@ -42,7 +42,13 @@ class ImportSongs extends Command
         $firstline = true;
         while (($data = fgetcsv($csvFile, 2000, ",")) !== FALSE) {
             if (!$firstline) {
-                $style = Style::firstOrCreate(['name' => $data[3]]);
+                $styleId = null;
+                $styleName = trim($data[3]);
+                if (!empty($styleName)) {
+                    $style = Style::firstOrCreate(['name' => $styleName]);
+                    $styleId = $style->id;
+                }
+
                 $code = Song::max('code') + 1;
 
                 Song::create([
@@ -51,7 +57,7 @@ class ImportSongs extends Command
                     "slug" => Str::slug($data[0]) . '-' . $code,
                     "youtube" => $data[1],
                     "song_writer" => $data[2],
-                    "style_id" => $style->id,
+                    "style_id" => $styleId,
                     "key" => $data[4],
                     "lyrics" => $data[5],
                     "music_notes" => $data[6],
