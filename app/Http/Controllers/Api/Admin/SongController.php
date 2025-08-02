@@ -43,6 +43,7 @@ class SongController extends Controller
             'style_id' => 'required|exists:styles,id',
             'lyrics' => 'required|string',
             'music_notes' => 'nullable|string',
+            'popular_rating' => 'nullable|integer|min:0|max:5',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:categories,id',
         ]);
@@ -82,6 +83,7 @@ class SongController extends Controller
             'style_id' => 'sometimes|required|exists:styles,id',
             'lyrics' => 'sometimes|required|string',
             'music_notes' => 'nullable|string',
+            'popular_rating' => 'nullable|integer|min:0|max:5',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:categories,id',
         ]);
