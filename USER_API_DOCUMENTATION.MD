@@ -69,6 +69,7 @@ This documentation provides details about the available API endpoints for users.
 - **Query Parameters:**
   - `search` (optional): A string to search for in the song title or lyrics
   - `style_id` (optional): Filter songs by style ID
+  - `category_id` (optional): Filter songs by category ID
   - `limit` (optional): Number of items per page (enables pagination)
   
 #### Paginated Response (when 'limit' parameter is provided):

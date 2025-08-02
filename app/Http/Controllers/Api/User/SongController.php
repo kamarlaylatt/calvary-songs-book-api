@@ -25,6 +25,11 @@ class SongController extends Controller
             ->when($request->style_id, function ($query, $styleId) {
                 $query->where('style_id', $styleId);
             })
+            ->when($request->category_id, function ($query, $categoryId) {
+                $query->whereHas('categories', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                });
+            })
             ->with(['style', 'categories']);
 
         if ($request->has('limit')) {
