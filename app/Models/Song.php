@@ -20,9 +20,21 @@ class Song extends Model
         'style_id',
         'lyrics',
         'music_notes',
+        'popular_rating',
         'createable_type',
         'createable_id',
     ];
+
+    protected $casts = [
+        'popular_rating' => 'integer',
+    ];
+
+    public static function rules()
+    {
+        return [
+            'popular_rating' => 'integer|min:0|max:5',
+        ];
+    }
 
     public function createable()
     {
