@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Models\Song;
 use App\Models\Category;
+use App\Models\Style;
 use Illuminate\Http\Request;
 
 class SongController extends Controller
@@ -75,5 +76,19 @@ class SongController extends Controller
     {
         $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
         return response()->json($categories);
+    }
+
+    /**
+     * Display a listing of all categories and styles for search filters.
+     */
+    public function searchFilters()
+    {
+        $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+        $styles = Style::orderBy('name')->get(['id', 'name']);
+
+        return response()->json([
+            'categories' => $categories,
+            'styles' => $styles
+        ]);
     }
 }

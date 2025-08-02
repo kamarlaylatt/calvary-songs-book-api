@@ -14,6 +14,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/songs', [SongController::class, 'index']);
 Route::get('/songs/{song:slug}', [SongController::class, 'show']);
 Route::get('/categories', [SongController::class, 'categories']);
+Route::get('/search-filters', [SongController::class, 'searchFilters']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
