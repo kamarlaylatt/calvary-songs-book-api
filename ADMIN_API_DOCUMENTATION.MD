@@ -149,7 +149,7 @@ This documentation provides details about the available API endpoints for admini
     "youtube": "https://www.youtube.com/watch?v=...",
     "description": "A description of the song.",
     "song_writer": "Songwriter Name",
-    "style_id": 1,
+    "style_id": 1, // nullable, must exist in styles table if present
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
     "popular_rating": 3,
@@ -240,7 +240,7 @@ This documentation provides details about the available API endpoints for admini
 - **Endpoint:** `PUT/PATCH /api/admin/songs/{song}`
 - **Description:** Updates an existing song.
 - **Authentication:** Bearer Token
-- **Request Body:** (same as create, but fields are optional)
+- **Request Body:** (same as create, but all fields are optional; `style_id` is nullable and, if present, must exist in styles table)
 - **Response:** The updated song object:
   ```json
   {
