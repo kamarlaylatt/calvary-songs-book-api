@@ -86,6 +86,7 @@ This documentation provides details about the available API endpoints for admini
         "song_writer": "Songwriter Name",
         "lyrics": "The lyrics of the song.",
         "music_notes": "The music notes of the song.",
+        "popular_rating": 3,
         "created_at": "2025-07-17T05:50:20.000000Z",
         "updated_at": "2025-07-17T05:50:20.000000Z",
         "style": {
@@ -151,6 +152,7 @@ This documentation provides details about the available API endpoints for admini
     "style_id": 1,
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
+    "popular_rating": 3,
     "category_ids": [1, 2]
   }
   ```
@@ -168,6 +170,7 @@ This documentation provides details about the available API endpoints for admini
     "song_writer": "Songwriter Name",
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
+    "popular_rating": 3,
     "created_at": "2025-07-17T05:50:20.000000Z",
     "updated_at": "2025-07-17T05:50:20.000000Z",
     "categories": [
@@ -210,6 +213,7 @@ This documentation provides details about the available API endpoints for admini
     "song_writer": "Songwriter Name",
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
+    "popular_rating": 3,
     "created_at": "2025-07-17T05:50:20.000000Z",
     "updated_at": "2025-07-17T05:50:20.000000Z",
     "style": {
@@ -251,6 +255,7 @@ This documentation provides details about the available API endpoints for admini
     "song_writer": "Updated Songwriter",
     "lyrics": "Updated lyrics",
     "music_notes": "Updated music notes",
+    "popular_rating": 4,
     "created_at": "2025-07-17T05:50:20.000000Z",
     "updated_at": "2025-07-17T05:51:20.000000Z",
     "categories": [
