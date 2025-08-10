@@ -25,6 +25,7 @@ class SongController extends Controller
             })
             ->with(['style', 'categories'])
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate(15);
 
         return response()->json($songs);
