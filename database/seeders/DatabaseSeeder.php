@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             // StyleSeeder::class,
             CategorySeeder::class,
+            SongLanguageSeeder::class,
         ]);
     }
 }
