@@ -70,6 +70,7 @@ This documentation provides details about the available API endpoints for users.
   - `search` (optional): A string to search for in the song title or lyrics
   - `style_id` (optional): Filter songs by style ID
   - `category_id` (optional): Filter songs by category ID
+  - `song_language_id` (optional): Filter songs by song language ID
   - `limit` (optional): Number of items per page (enables pagination)
   
 #### Paginated Response (when 'limit' parameter is provided):
@@ -103,6 +104,14 @@ This documentation provides details about the available API endpoints for users.
             "slug": "category-name",
             "created_at": "2025-07-18T09:39:48.000000Z",
             "updated_at": "2025-07-18T09:39:48.000000Z"
+          }
+        ],
+        "song_languages": [
+          {
+            "id": 1,
+            "name": "English",
+            "created_at": "2025-07-17T05:50:20.000000Z",
+            "updated_at": "2025-07-17T05:50:20.000000Z"
           }
         ]
       }
@@ -168,6 +177,14 @@ This documentation provides details about the available API endpoints for users.
           "created_at": "2025-07-18T09:39:48.000000Z",
           "updated_at": "2025-07-18T09:39:48.000000Z"
         }
+      ],
+      "song_languages": [
+        {
+          "id": 1,
+          "name": "English",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
       ]
     }
   ]
@@ -223,6 +240,14 @@ This documentation provides details about the available API endpoints for users.
         "updated_at": "2025-07-18T09:39:48.000000Z"
       }
     ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      }
+    ],
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
     "created_at": "2025-07-17T05:50:20.000000Z",
@@ -248,6 +273,12 @@ This documentation provides details about the available API endpoints for users.
       {
         "id": 1,
         "name": "Style Name"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English"
       }
     ]
   }

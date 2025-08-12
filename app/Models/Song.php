@@ -50,4 +50,9 @@ class Song extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+    public function songLanguages()
+    {
+        return $this->belongsToMany(SongLanguage::class);
+    }
 }

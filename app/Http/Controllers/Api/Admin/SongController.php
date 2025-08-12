@@ -23,7 +23,7 @@ class SongController extends Controller
                     // $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
                 });
             })
-            ->with(['style', 'categories'])
+            ->with(['style', 'categories', 'songLanguages'])
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(15);
@@ -47,6 +47,8 @@ class SongController extends Controller
             'popular_rating' => 'nullable|integer|min:0|max:5',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:categories,id',
+            'song_language_ids' => 'nullable|array',
+            'song_language_ids.*' => 'exists:song_languages,id',
         ]);
 
         /** @var \App\Models\Admin $admin */
@@ -60,7 +62,11 @@ class SongController extends Controller
             $song->categories()->sync($request->category_ids);
         }
 
-        return response()->json($song->load(['style', 'categories']), 201);
+        if ($request->has('song_language_ids')) {
+            $song->songLanguages()->sync($request->song_language_ids);
+        }
+
+        return response()->json($song->load(['style', 'categories', 'songLanguages']), 201);
     }
 
     /**
@@ -68,7 +74,7 @@ class SongController extends Controller
      */
     public function show(Song $song)
     {
-        return response()->json($song->load(['style', 'categories']));
+        return response()->json($song->load(['style', 'categories', 'songLanguages']));
     }
 
     /**
@@ -87,6 +93,8 @@ class SongController extends Controller
             'popular_rating' => 'nullable|integer|min:0|max:5',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:categories,id',
+            'song_language_ids' => 'nullable|array',
+            'song_language_ids.*' => 'exists:song_languages,id',
         ]);
 
         $song->update($validated + ['slug' => Str::slug($request->title) . '-' . $song->code]);
@@ -95,7 +103,11 @@ class SongController extends Controller
             $song->categories()->sync($request->category_ids);
         }
 
-        return response()->json($song->load(['style', 'categories']));
+        if ($request->has('song_language_ids')) {
+            $song->songLanguages()->sync($request->song_language_ids);
+        }
+
+        return response()->json($song->load(['style', 'categories', 'songLanguages']));
     }
 
     /**

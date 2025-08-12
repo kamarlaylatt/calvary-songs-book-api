@@ -104,6 +104,14 @@ This documentation provides details about the available API endpoints for admini
             "created_at": "2025-07-18T09:39:48.000000Z",
             "updated_at": "2025-07-18T09:39:48.000000Z"
           }
+        ],
+        "song_languages": [
+          {
+            "id": 1,
+            "name": "English",
+            "created_at": "2025-07-17T05:50:20.000000Z",
+            "updated_at": "2025-07-17T05:50:20.000000Z"
+          }
         ]
       }
     ],
@@ -153,7 +161,8 @@ This documentation provides details about the available API endpoints for admini
     "lyrics": "The lyrics of the song.",
     "music_notes": "The music notes of the song.",
     "popular_rating": 3,
-    "category_ids": [1, 2]
+    "category_ids": [1, 2],
+    "song_language_ids": [1, 2]
   }
   ```
 - **Response:** The newly created song object with auto-generated fields:
@@ -189,6 +198,20 @@ This documentation provides details about the available API endpoints for admini
         "description": "Category description",
         "created_at": "2025-07-18T09:39:48.000000Z",
         "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      },
+      {
+        "id": 2,
+        "name": "Spanish",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
       }
     ]
   }
@@ -230,6 +253,14 @@ This documentation provides details about the available API endpoints for admini
         "description": "Category description",
         "created_at": "2025-07-18T09:39:48.000000Z",
         "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
       }
     ]
   }
@@ -282,6 +313,14 @@ This documentation provides details about the available API endpoints for admini
         "description": "Category description",
         "created_at": "2025-07-18T09:39:48.000000Z",
         "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
       }
     ]
   }
@@ -497,5 +536,94 @@ This documentation provides details about the available API endpoints for admini
 
 - **Endpoint:** `DELETE /api/admin/categories/{category}`
 - **Description:** Deletes a category.
+- **Authentication:** Bearer Token
+- **Response:** `204 No Content`
+
+## Song Languages
+
+### List Song Languages
+
+- **Endpoint:** `GET /api/admin/song-languages`
+- **Description:** Retrieves a list of all song languages.
+- **Authentication:** Bearer Token
+- **Response:** A JSON array of song language objects:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "English",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    {
+      "id": 2,
+      "name": "Spanish",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  ]
+  ```
+
+### Create Song Language
+
+- **Endpoint:** `POST /api/admin/song-languages`
+- **Description:** Creates a new song language.
+- **Authentication:** Bearer Token
+- **Request Body:**
+  ```json
+  {
+    "name": "New Song Language Name"
+  }
+  ```
+- **Response:** The newly created song language object:
+  ```json
+  {
+    "id": 3,
+    "name": "New Song Language Name",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z"
+  }
+  ```
+
+### Show Song Language
+
+- **Endpoint:** `GET /api/admin/song-languages/{song_language}`
+- **Description:** Retrieves a single song language by its ID.
+- **Authentication:** Bearer Token
+- **Response:** The song language object:
+  ```json
+  {
+    "id": 1,
+    "name": "Song Language Name",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z"
+  }
+  ```
+
+### Update Song Language
+
+- **Endpoint:** `PUT/PATCH /api/admin/song-languages/{song_language}`
+- **Description:** Updates an existing song language.
+- **Authentication:** Bearer Token
+- **Request Body:**
+  ```json
+  {
+    "name": "Updated Song Language Name"
+  }
+  ```
+- **Response:** The updated song language object:
+  ```json
+  {
+    "id": 1,
+    "name": "Updated Song Language Name",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:51:20.000000Z"
+  }
+  ```
+
+### Delete Song Language
+
+- **Endpoint:** `DELETE /api/admin/song-languages/{song_language}`
+- **Description:** Deletes a song language.
 - **Authentication:** Bearer Token
 - **Response:** `204 No Content`

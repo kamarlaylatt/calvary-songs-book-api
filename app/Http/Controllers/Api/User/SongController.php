@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Models\Song;
 use App\Models\Category;
+use App\Models\SongLanguage;
 use App\Models\Style;
 use Illuminate\Http\Request;
 
@@ -31,7 +32,12 @@ class SongController extends Controller
                     $q->where('categories.id', $categoryId);
                 });
             })
-            ->with(['style', 'categories']);
+            ->when($request->song_language_id, function ($query, $songLanguageId) {
+                $query->whereHas('songLanguages', function ($q) use ($songLanguageId) {
+                    $q->where('song_languages.id', $songLanguageId);
+                });
+            })
+            ->with(['style', 'categories', 'songLanguages']);
 
         if ($request->has('limit')) {
             $songs = $songs->paginate($request->limit);
@@ -50,7 +56,7 @@ class SongController extends Controller
     public function show($slug)
     {
         $song = Song::where('slug', $slug)->firstOrFail();
-        $song->load('style');
+        $song->load('style', 'categories', 'songLanguages');
 
         return response()->json([
             'id' => $song->id,
@@ -62,6 +68,7 @@ class SongController extends Controller
             'song_writer' => $song->song_writer,
             'style' => $song->style,
             'categories' => $song->categories,
+            'song_languages' => $song->songLanguages,
             'lyrics' => $song->lyrics,
             'music_notes' => $song->music_notes,
             'created_at' => $song->created_at,
@@ -85,10 +92,12 @@ class SongController extends Controller
     {
         $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
         $styles = Style::orderBy('name')->get(['id', 'name']);
+        $songLanguages = SongLanguage::orderBy('name')->get(['id', 'name']);
 
         return response()->json([
             'categories' => $categories,
-            'styles' => $styles
+            'styles' => $styles,
+            'song_languages' => $songLanguages
         ]);
     }
 }
