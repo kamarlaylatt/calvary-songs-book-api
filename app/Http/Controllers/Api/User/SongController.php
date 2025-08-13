@@ -37,7 +37,10 @@ class SongController extends Controller
                     $q->where('song_languages.id', $songLanguageId);
                 });
             })
-            ->with(['style', 'categories', 'songLanguages']);
+            ->with(['style', 'categories', 'songLanguages'])
+            ->orderByDesc('popular_rating')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
 
         if ($request->has('limit')) {
             $songs = $songs->paginate($request->limit);
