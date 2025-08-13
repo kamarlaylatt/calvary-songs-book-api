@@ -68,7 +68,12 @@ This documentation provides details about the available API endpoints for admini
 - **Description:** Retrieves a paginated list of songs.
 - **Authentication:** Bearer Token
 - **Query Parameters:**
-  - `search` (optional): A string to search for in the song title, songwriter, or lyrics.
+  - `search` (optional): A string to search for in the song title or lyrics.
+  - `style_id` (optional): Filter songs by style ID.
+  - `category_ids` (optional): Filter songs by category IDs (array or single ID).
+  - `song_language_ids` (optional): Filter songs by language IDs (array or single ID).
+  - `sort_by` (optional): Field to sort by (supported: 'created_at', 'id').
+  - `sort_order` (optional): Sort direction ('asc' or 'desc').
 - **Response:** A paginated JSON object with the following structure:
   ```json
   {

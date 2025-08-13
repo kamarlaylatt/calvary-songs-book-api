@@ -23,9 +23,31 @@ class SongController extends Controller
                     // $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
                 });
             })
+            ->when($request->style_id, function ($query, $styleId) {
+                $query->where('style_id', $styleId);
+            })
+            ->when($request->category_ids, function ($query, $categoryIds) {
+                $query->whereHas('categories', function ($q) use ($categoryIds) {
+                    $q->whereIn('categories.id', is_array($categoryIds) ? $categoryIds : [$categoryIds]);
+                });
+            })
+            ->when($request->song_language_ids, function ($query, $songLanguageIds) {
+                $query->whereHas('songLanguages', function ($q) use ($songLanguageIds) {
+                    $q->whereIn('song_languages.id', is_array($songLanguageIds) ? $songLanguageIds : [$songLanguageIds]);
+                });
+            })
             ->with(['style', 'categories', 'songLanguages'])
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
+            ->when($request->has('sort_by') && $request->has('sort_order'), function ($query) use ($request) {
+                $sortBy = $request->sort_by;
+                $sortOrder = $request->sort_order === 'asc' ? 'asc' : 'desc';
+
+                if (in_array($sortBy, ['created_at', 'id'])) {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            })
+            ->when(!($request->has('sort_by') && $request->has('sort_order')), function ($query) {
+                $query->orderByDesc('created_at')->orderByDesc('id');
+            })
             ->paginate(15);
 
         return response()->json($songs);
