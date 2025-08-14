@@ -51,4 +51,8 @@ class User extends Authenticatable
     {
         return $this->morphMany(Song::class, 'createable');
     }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
 }
