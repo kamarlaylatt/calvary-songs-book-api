@@ -60,6 +60,157 @@ This documentation provides details about the available API endpoints for admini
   }
   ```
 
+## Admins
+
+### List Admins
+
+- **Endpoint:** `GET /api/admin/admins`
+- **Description:** Retrieves a paginated list of admins.
+- **Authentication:** Bearer Token
+- **Response:** A paginated JSON object with the following structure:
+  ```json
+  {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 1,
+        "name": "Admin Name",
+        "email": "admin@example.com",
+        "status": "active",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z",
+        "roles": [
+          {
+            "id": 1,
+            "name": "Super Admin",
+            "created_at": "2025-08-14T17:51:19.000000Z",
+            "updated_at": "2025-08-14T17:51:19.000000Z"
+          }
+        ]
+      }
+    ],
+    "first_page_url": "http://localhost/api/admin/admins?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://localhost/api/admin/admins?page=1",
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "http://localhost/api/admin/admins?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "next_page_url": null,
+    "path": "http://localhost/api/admin/admins",
+    "per_page": 10,
+    "prev_page_url": null,
+    "to": 1,
+    "total": 1
+  }
+  ```
+
+### Create Admin
+
+- **Endpoint:** `POST /api/admin/admins`
+- **Description:** Creates a new admin.
+- **Authentication:** Bearer Token
+- **Request Body:**
+  ```json
+  {
+    "name": "New Admin Name",
+    "email": "newadmin@example.com",
+    "password": "password",
+    "password_confirmation": "password",
+    "status": "active",
+    "roles": [1, 2]
+  }
+  ```
+- **Response:** The newly created admin object:
+  ```json
+  {
+    "id": 2,
+    "name": "New Admin Name",
+    "email": "newadmin@example.com",
+    "status": "active",
+    "created_at": "2025-08-14T18:30:00.000000Z",
+    "updated_at": "2025-08-14T18:30:00.000000Z",
+    "roles": [
+      {
+        "id": 1,
+        "name": "Super Admin"
+      },
+      {
+        "id": 2,
+        "name": "Editor"
+      }
+    ]
+  }
+  ```
+
+### Show Admin
+
+- **Endpoint:** `GET /api/admin/admins/{admin}`
+- **Description:** Retrieves a single admin by their ID.
+- **Authentication:** Bearer Token
+- **Response:** The admin object with related roles:
+  ```json
+  {
+    "id": 1,
+    "name": "Admin Name",
+    "email": "admin@example.com",
+    "status": "active",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-07-17T05:50:20.000000Z",
+    "roles": [
+      {
+        "id": 1,
+        "name": "Super Admin"
+      }
+    ]
+  }
+  ```
+
+### Update Admin
+
+- **Endpoint:** `PUT/PATCH /api/admin/admins/{admin}`
+- **Description:** Updates an existing admin.
+- **Authentication:** Bearer Token
+- **Request Body:** (same as create, but all fields are optional)
+- **Response:** The updated admin object:
+  ```json
+  {
+    "id": 1,
+    "name": "Updated Admin Name",
+    "email": "admin@example.com",
+    "status": "inactive",
+    "created_at": "2025-07-17T05:50:20.000000Z",
+    "updated_at": "2025-08-14T18:35:00.000000Z",
+    "roles": [
+      {
+        "id": 2,
+        "name": "Editor"
+      }
+    ]
+  }
+  ```
+
+### Delete Admin
+
+- **Endpoint:** `DELETE /api/admin/admins/{admin}`
+- **Description:** Deletes an admin (soft delete).
+- **Authentication:** Bearer Token
+- **Response:** `204 No Content`
+
 ## Songs
 
 ### List Songs
