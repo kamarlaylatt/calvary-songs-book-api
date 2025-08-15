@@ -24,7 +24,15 @@ This documentation provides details about the available API endpoints for admini
       "name": "Admin Name",
       "email": "admin@example.com",
       "created_at": "2025-07-17T05:50:20.000000Z",
-      "updated_at": "2025-07-17T05:50:20.000000Z"
+      "updated_at": "2025-07-17T05:50:20.000000Z",
+      "roles": [
+        {
+          "id": 1,
+          "name": "Super Admin",
+          "created_at": "2025-08-14T17:51:19.000000Z",
+          "updated_at": "2025-08-14T17:51:19.000000Z"
+        }
+      ]
     },
     "token": "your-api-token"
   }
@@ -55,7 +63,15 @@ This documentation provides details about the available API endpoints for admini
       "name": "Admin Name",
       "email": "admin@example.com",
       "created_at": "2025-07-17T05:50:20.000000Z",
-      "updated_at": "2025-07-17T05:50:20.000000Z"
+      "updated_at": "2025-07-17T05:50:20.000000Z",
+      "roles": [
+        {
+          "id": 1,
+          "name": "Super Admin",
+          "created_at": "2025-08-14T17:51:19.000000Z",
+          "updated_at": "2025-08-14T17:51:19.000000Z"
+        }
+      ]
     }
   }
   ```
