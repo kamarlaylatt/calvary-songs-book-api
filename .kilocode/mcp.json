@@ -11,6 +11,14 @@
       "alwaysAllow": [
         "count_model_records"
       ]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "jdbc:postgresql://127.0.0.1:54320/postgres"
+      ]
     }
   }
 }
