@@ -235,6 +235,7 @@ This documentation provides details about the available API endpoints for admini
 - **Description:** Retrieves a paginated list of songs.
 - **Authentication:** Bearer Token
 - **Query Parameters:**
+  - `id` (optional): Filter songs by specific ID.
   - `search` (optional): A string to search for in the song title or lyrics.
   - `style_id` (optional): Filter songs by style ID.
   - `category_ids` (optional): Filter songs by category IDs (array or single ID).

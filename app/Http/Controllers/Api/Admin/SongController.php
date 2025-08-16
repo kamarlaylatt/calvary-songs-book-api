@@ -15,6 +15,9 @@ class SongController extends Controller
     public function index(Request $request)
     {
         $songs = Song::query()
+            ->when($request->id, function ($query, $id) {
+                $query->where('id', $id);
+            })
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%");
