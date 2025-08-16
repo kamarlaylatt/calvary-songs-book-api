@@ -67,7 +67,7 @@ This documentation provides details about the available API endpoints for users.
 - **Endpoint:** `GET /api/songs`
 - **Description:** Retrieves a list of songs. Returns paginated response when 'limit' parameter is provided, otherwise returns all matching songs in a simple array.
 - **Query Parameters:**
-  - `search` (optional): A string to search for in the song title or lyrics
+  - `search` (optional): A string to search for in the song title or lyrics. If a numeric value is provided, it will search by song ID.
   - `style_id` (optional): Filter songs by style ID
   - `category_id` (optional): Filter songs by category ID
   - `song_language_id` (optional): Filter songs by song language ID

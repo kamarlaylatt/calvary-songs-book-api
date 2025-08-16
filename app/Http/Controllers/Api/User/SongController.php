@@ -18,11 +18,15 @@ class SongController extends Controller
     {
         $songs = Song::query()
             ->when($request->search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%");
-                })->orWhere(function ($q) use ($search) {
-                    $q->where('lyrics', 'like', "%{$search}%");
-                });
+                if (is_numeric($search)) {
+                    $query->where('id', $search);
+                } else {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%");
+                    })->orWhere(function ($q) use ($search) {
+                        $q->where('lyrics', 'like', "%{$search}%");
+                    });
+                }
             })
             ->when($request->style_id, function ($query, $styleId) {
                 $query->where('style_id', $styleId);
