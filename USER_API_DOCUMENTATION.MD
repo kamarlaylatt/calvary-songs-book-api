@@ -70,9 +70,18 @@ This documentation provides details about the available API endpoints for users.
   - `search` (optional): A string to search for in the song title or lyrics. If a numeric value is provided, it will search by song ID.
   - `style_id` (optional): Filter songs by style ID
   - `category_id` (optional): Filter songs by category ID
-  - `song_language_id` (optional): Filter songs by song language ID
+  - `song_language_id` (optional): Filter songs by Song Language ID. Accepts a single integer ID. Matches songs that have at least one related song language with that ID (many-to-many). To discover valid IDs, request `GET /api/search-filters` and use the "song_languages" list.
   - `limit` (optional): Number of items per page (enables pagination)
   
+#### Examples
+
+- Filter by language: `GET /api/songs?song_language_id=1`
+- Combine with category: `GET /api/songs?category_id=2&song_language_id=1`
+- Search by numeric ID and language: `GET /api/songs?search=10&song_language_id=1`
+- With pagination: `GET /api/songs?song_language_id=1&limit=15`
+
+Note: When multiple filters are provided, they are combined with AND.
+
 #### Paginated Response (when 'limit' parameter is provided):
   ```json
   {
@@ -258,8 +267,8 @@ This documentation provides details about the available API endpoints for users.
 
 ### Get Search Filters
 - **Endpoint:** `GET /api/search-filters`
-- **Description:** Retrieves all categories and styles for search screen filters.
-- **Response:** A JSON object containing both categories and styles:
+- **Description:** Retrieves categories, styles, and song languages for search screen filters.
+- **Response:** A JSON object containing categories, styles, and song languages:
   ```json
   {
     "categories": [
