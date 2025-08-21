@@ -68,25 +68,32 @@ class SongController extends Controller
      */
     public function show($slug)
     {
-        $song = Song::where('slug', $slug)->firstOrFail();
-        $song->load('style', 'categories', 'songLanguages');
+        $cacheKey = "song.show.{$slug}";
+        $cacheDuration = 60 * 15; // 15 minutes
 
-        return response()->json([
-            'id' => $song->id,
-            'code' => $song->code,
-            'title' => $song->title,
-            'slug' => $song->slug,
-            'youtube' => $song->youtube,
-            'description' => $song->description,
-            'song_writer' => $song->song_writer,
-            'style' => $song->style,
-            'categories' => $song->categories,
-            'song_languages' => $song->songLanguages,
-            'lyrics' => $song->lyrics,
-            'music_notes' => $song->music_notes,
-            'created_at' => $song->created_at,
-            'updated_at' => $song->updated_at,
-        ]);
+        $song = Cache::remember($cacheKey, $cacheDuration, function () use ($slug) {
+            $song = Song::where('slug', $slug)->firstOrFail();
+            $song->load('style', 'categories', 'songLanguages');
+
+            return [
+                'id' => $song->id,
+                'code' => $song->code,
+                'title' => $song->title,
+                'slug' => $song->slug,
+                'youtube' => $song->youtube,
+                'description' => $song->description,
+                'song_writer' => $song->song_writer,
+                'style' => $song->style,
+                'categories' => $song->categories,
+                'song_languages' => $song->songLanguages,
+                'lyrics' => $song->lyrics,
+                'music_notes' => $song->music_notes,
+                'created_at' => $song->created_at,
+                'updated_at' => $song->updated_at,
+            ];
+        });
+
+        return response()->json($song);
     }
 
     /**
@@ -103,14 +110,21 @@ class SongController extends Controller
      */
     public function searchFilters()
     {
-        $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
-        $styles = Style::orderBy('name')->get(['id', 'name']);
-        $songLanguages = SongLanguage::orderBy('name')->get(['id', 'name']);
+        $cacheKey = 'song.searchFilters';
+        $cacheDuration = 60 * 15; // 15 minutes
 
-        return response()->json([
-            'categories' => $categories,
-            'styles' => $styles,
-            'song_languages' => $songLanguages
-        ]);
+        $filters = Cache::remember($cacheKey, $cacheDuration, function () {
+            $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+            $styles = Style::orderBy('name')->get(['id', 'name']);
+            $songLanguages = SongLanguage::orderBy('name')->get(['id', 'name']);
+
+            return [
+                'categories' => $categories,
+                'styles' => $styles,
+                'song_languages' => $songLanguages
+            ];
+        });
+
+        return response()->json($filters);
     }
 }

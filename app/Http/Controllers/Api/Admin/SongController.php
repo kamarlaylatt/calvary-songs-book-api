@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Song;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class SongController extends Controller
 {
@@ -16,7 +17,13 @@ class SongController extends Controller
     {
         // Create a cache key based on request parameters
         $cacheKey = 'songs_index_' . md5(serialize($request->only([
-            'id', 'search', 'style_id', 'category_ids', 'song_language_ids', 'sort_by', 'sort_order'
+            'id',
+            'search',
+            'style_id',
+            'category_ids',
+            'song_language_ids',
+            'sort_by',
+            'sort_order'
         ])));
 
         $songs = cache()->remember($cacheKey, 300, function () use ($request) {
@@ -98,6 +105,8 @@ class SongController extends Controller
             $song->songLanguages()->sync($request->song_language_ids);
         }
 
+        $this->clearSongCaches();
+
         return response()->json($song->load(['style', 'categories', 'songLanguages']), 201);
     }
 
@@ -139,6 +148,8 @@ class SongController extends Controller
             $song->songLanguages()->sync($request->song_language_ids);
         }
 
+        $this->clearSongCaches();
+
         return response()->json($song->load(['style', 'categories', 'songLanguages']));
     }
 
@@ -149,6 +160,20 @@ class SongController extends Controller
     {
         $song->delete();
 
+        $this->clearSongCaches();
+
         return response()->json(null, 204);
+    }
+
+    /**
+     * Clear caches related to songs listings for both admin and user endpoints.
+     */
+    private function clearSongCaches(): void
+    {
+        // Flush the cache to ensure all song-related cached lists are invalidated.
+        // This clears keys produced by both:
+        // - Admin: songs_index_* (md5 hash)
+        // - User: songs.index.* (http_build_query)
+        Cache::flush();
     }
 }
