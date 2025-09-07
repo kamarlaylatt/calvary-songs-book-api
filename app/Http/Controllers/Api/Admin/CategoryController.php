@@ -27,6 +27,8 @@ class CategoryController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $this->authorize('create', Category::class);
+
         $category = Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
@@ -52,6 +54,8 @@ class CategoryController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $this->authorize('update', $category);
+
         $category->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
@@ -63,6 +67,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        $this->authorize('delete', $category);
+
         $category->delete();
         return response()->json(null, 204);
     }

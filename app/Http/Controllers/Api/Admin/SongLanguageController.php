@@ -25,6 +25,8 @@ class SongLanguageController extends Controller
             'name' => 'required|string|max:255|unique:song_languages,name',
         ]);
 
+        $this->authorize('create', SongLanguage::class);
+
         $songLanguage = SongLanguage::create($validated);
 
         return response()->json($songLanguage, 201);
@@ -47,6 +49,8 @@ class SongLanguageController extends Controller
             'name' => 'required|string|max:255|unique:song_languages,name,' . $songLanguage->id,
         ]);
 
+        $this->authorize('update', $songLanguage);
+
         $songLanguage->update($validated);
 
         return response()->json($songLanguage);
@@ -57,6 +61,8 @@ class SongLanguageController extends Controller
      */
     public function destroy(SongLanguage $songLanguage)
     {
+        $this->authorize('delete', $songLanguage);
+
         $songLanguage->delete();
 
         return response()->json(null, 204);

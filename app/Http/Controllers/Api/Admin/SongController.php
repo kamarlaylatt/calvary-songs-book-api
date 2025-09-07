@@ -82,6 +82,8 @@ class SongController extends Controller
             'song_language_ids.*' => 'exists:song_languages,id',
         ]);
 
+        $this->authorize('create', Song::class);
+
         /** @var \App\Models\Admin $admin */
         $admin = auth('admin')->user();
         $song = $admin->songs()->create($validated + [
@@ -130,6 +132,8 @@ class SongController extends Controller
             'song_language_ids.*' => 'exists:song_languages,id',
         ]);
 
+        $this->authorize('update', $song);
+
         $song->update($validated + ['slug' => Str::slug($request->title) . '-' . $song->code]);
 
         if ($request->has('category_ids')) {
@@ -150,6 +154,8 @@ class SongController extends Controller
      */
     public function destroy(Song $song)
     {
+        $this->authorize('delete', $song);
+
         $song->delete();
 
         $this->clearSongCaches();

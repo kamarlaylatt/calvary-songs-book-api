@@ -34,6 +34,8 @@ class AdminController extends Controller
             'roles.*' => 'exists:roles,id'
         ]);
 
+        $this->authorize('create', Admin::class);
+
         $admin = Admin::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -77,6 +79,8 @@ class AdminController extends Controller
             'roles.*' => 'exists:roles,id'
         ]);
 
+        $this->authorize('update', $admin);
+
         if ($request->has('name')) {
             $admin->name = $request->name;
         }
@@ -107,6 +111,8 @@ class AdminController extends Controller
      */
     public function destroy(Admin $admin)
     {
+        $this->authorize('delete', $admin);
+
         $admin->delete();
         return response()->json(null, 204);
     }

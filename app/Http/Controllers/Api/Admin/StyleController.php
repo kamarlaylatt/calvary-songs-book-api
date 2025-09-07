@@ -25,6 +25,8 @@ class StyleController extends Controller
             'name' => 'required|string|max:255|unique:styles,name',
         ]);
 
+        $this->authorize('create', Style::class);
+
         $style = Style::create($validated);
 
         return response()->json($style, 201);
@@ -47,6 +49,8 @@ class StyleController extends Controller
             'name' => 'sometimes|required|string|max:255|unique:styles,name,' . $style->id,
         ]);
 
+        $this->authorize('update', $style);
+
         $style->update($validated);
 
         return response()->json($style);
@@ -57,6 +61,8 @@ class StyleController extends Controller
      */
     public function destroy(Style $style)
     {
+        $this->authorize('delete', $style);
+
         $style->delete();
 
         return response()->json(null, 204);
