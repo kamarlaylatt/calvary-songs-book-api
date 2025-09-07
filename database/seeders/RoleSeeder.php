@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\RoleType;
+use App\Enums\AdminRoleType;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,20 +17,20 @@ class RoleSeeder extends Seeder
     {
         DB::table('roles')->insertOrIgnore([
             [
-                'id' => RoleType::Superadmin->value,
-                'name' => RoleType::Superadmin->name(),
+                'id' => AdminRoleType::Superadmin->value,
+                'name' => AdminRoleType::Superadmin->name(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id' => RoleType::Admin->value,
-                'name' => RoleType::Admin->name(),
+                'id' => AdminRoleType::Admin->value,
+                'name' => AdminRoleType::Admin->name(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id' => RoleType::Guest->value,
-                'name' => RoleType::Guest->name(),
+                'id' => AdminRoleType::Guest->value,
+                'name' => AdminRoleType::Guest->name(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

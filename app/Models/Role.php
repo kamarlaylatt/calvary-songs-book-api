@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\RoleType;
+use App\Enums\AdminRoleType;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +14,7 @@ class Role extends Model
     protected $fillable = ['name'];
 
     protected $casts = [
-        'id' => RoleType::class,
+        'id' => AdminRoleType::class,
     ];
 
     public function users()
