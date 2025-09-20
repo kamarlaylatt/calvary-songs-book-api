@@ -292,3 +292,57 @@ Note: When multiple filters are provided, they are combined with AND.
     ]
   }
   ```
+
+## Version Check (Force Update)
+
+### Check App Version
+- **Endpoint:** `POST /api/check-version`
+- **Description:** Checks if the Android/iOS app needs to be updated by comparing the current version with the minimum required version.
+- **Request Body:**
+  ```json
+  {
+    "version_code": 1,
+    "platform": "android"
+  }
+  ```
+- **Parameters:**
+  - `version_code` (required): Integer representing the current app version code
+  - `platform` (required): String, must be either "android" or "ios"
+- **Success Response:**
+  ```json
+  {
+    "needs_update": true,
+    "current_version_code": 1,
+    "minimum_version_code": 3,
+    "latest_version_code": 4,
+    "latest_version_name": "1.3.0",
+    "update_url": "https://play.google.com/store/apps/details?id=com.example.calvarysongs",
+    "release_notes": "Latest version with new features",
+    "message": "A new version is available. Please update to continue using the app."
+  }
+  ```
+- **Up to Date Response:**
+  ```json
+  {
+    "needs_update": false,
+    "current_version_code": 4,
+    "minimum_version_code": 3,
+    "latest_version_code": 4,
+    "latest_version_name": "1.3.0",
+    "update_url": "https://play.google.com/store/apps/details?id=com.example.calvarysongs",
+    "release_notes": "Latest version with new features",
+    "message": "Your app is up to date."
+  }
+  ```
+- **Validation Error Response (422):**
+  ```json
+  {
+    "error": "Validation failed",
+    "message": "The platform field is required."
+  }
+  ```
+- **Notes:**
+  - The API compares the provided `version_code` with the minimum force update version stored in the database
+  - If `needs_update` is `true`, the app should prompt the user to update using the provided `update_url`
+  - The `update_url` points to the Play Store (Android) or App Store (iOS) listing
+  - Version information is managed through the `app_versions` database table
