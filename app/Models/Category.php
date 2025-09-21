@@ -14,6 +14,7 @@ class Category extends Model
         'name',
         'slug',
         'description',
+        'sort_no',
     ];
 
     public function songs()

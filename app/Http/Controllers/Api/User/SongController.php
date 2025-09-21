@@ -101,7 +101,7 @@ class SongController extends Controller
      */
     public function categories()
     {
-        $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+        $categories = Category::orderBy('sort_no', 'asc')->get(['id', 'name', 'slug']);
         return response()->json($categories);
     }
 

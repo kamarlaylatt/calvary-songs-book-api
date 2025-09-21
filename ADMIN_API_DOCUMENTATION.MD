@@ -600,7 +600,7 @@ This documentation provides details about the available API endpoints for admini
 ### List Categories
 
 - **Endpoint:** `GET /api/admin/categories`
-- **Description:** Retrieves a paginated list of categories.
+- **Description:** Retrieves a paginated list of categories sorted by `sort_no` (ascending) and then by creation date (latest first).
 - **Authentication:** Bearer Token
 - **Response:** A paginated JSON object with category data:
   ```json
@@ -612,6 +612,7 @@ This documentation provides details about the available API endpoints for admini
         "name": "Category Name",
         "slug": "category-name",
         "description": "Category description",
+        "sort_no": 1,
         "created_at": "2025-07-18T09:39:48.000000Z",
         "updated_at": "2025-07-18T09:39:48.000000Z"
       }
@@ -649,13 +650,14 @@ This documentation provides details about the available API endpoints for admini
 ### Create Category
 
 - **Endpoint:** `POST /api/admin/categories`
-- **Description:** Creates a new category.
+- **Description:** Creates a new category. The `sort_no` field controls the display order of categories (lower numbers appear first).
 - **Authentication:** Bearer Token
 - **Request Body:**
   ```json
   {
     "name": "New Category Name",
-    "description": "Optional category description"
+    "description": "Optional category description",
+    "sort_no": 1
   }
   ```
 - **Response:** The newly created category object:
@@ -665,6 +667,7 @@ This documentation provides details about the available API endpoints for admini
     "name": "New Category Name",
     "slug": "new-category-name",
     "description": "Optional category description",
+    "sort_no": 1,
     "created_at": "2025-07-18T09:39:48.000000Z",
     "updated_at": "2025-07-18T09:39:48.000000Z"
   }
@@ -682,6 +685,7 @@ This documentation provides details about the available API endpoints for admini
     "name": "Category Name",
     "slug": "category-name",
     "description": "Category description",
+    "sort_no": 1,
     "created_at": "2025-07-18T09:39:48.000000Z",
     "updated_at": "2025-07-18T09:39:48.000000Z"
   }
@@ -690,9 +694,16 @@ This documentation provides details about the available API endpoints for admini
 ### Update Category
 
 - **Endpoint:** `PUT/PATCH /api/admin/categories/{category}`
-- **Description:** Updates an existing category.
+- **Description:** Updates an existing category. The `sort_no` field can be used to change the display order of categories.
 - **Authentication:** Bearer Token
 - **Request Body:** (same as create, but fields are optional)
+  ```json
+  {
+    "name": "Updated Category Name",
+    "description": "Updated description",
+    "sort_no": 2
+  }
+  ```
 - **Response:** The updated category object:
   ```json
   {
@@ -700,6 +711,7 @@ This documentation provides details about the available API endpoints for admini
     "name": "Updated Category Name",
     "slug": "updated-category-name",
     "description": "Updated description",
+    "sort_no": 2,
     "created_at": "2025-07-18T09:39:48.000000Z",
     "updated_at": "2025-07-18T09:40:48.000000Z"
   }

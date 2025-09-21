@@ -14,18 +14,19 @@ class CategorySeeder extends Seeder
         // \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         $categories = [
-            ['name' => 'Worship', 'description' => 'Songs for worship services'],
-            ['name' => 'Praise', 'description' => 'Upbeat praise songs'],
-            ['name' => 'Hymns', 'description' => 'Traditional hymns'],
-            ['name' => 'Seasonal', 'description' => 'Christmas, Easter and other seasonal songs'],
-            ['name' => 'Special', 'description' => 'Special occasion songs'],
+            ['name' => 'Worship', 'description' => 'Songs for worship services', 'sort_no' => 1],
+            ['name' => 'Praise', 'description' => 'Upbeat praise songs', 'sort_no' => 2],
+            ['name' => 'Hymns', 'description' => 'Traditional hymns', 'sort_no' => 3],
+            ['name' => 'Seasonal', 'description' => 'Christmas, Easter and other seasonal songs', 'sort_no' => 4],
+            ['name' => 'Special', 'description' => 'Special occasion songs', 'sort_no' => 5],
         ];
 
-        foreach ($categories as $category) {
+        foreach ($categories as $index => $category) {
             Category::create([
                 'name' => $category['name'],
                 'slug' => \Illuminate\Support\Str::slug($category['name']),
                 'description' => $category['description'],
+                'sort_no' => $category['sort_no'],
             ]);
         }
     }

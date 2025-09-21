@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->paginate(10);
+        $categories = Category::orderBy('sort_no', 'asc')->latest()->paginate(10);
         return response()->json($categories);
     }
 
@@ -21,6 +21,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'sort_no' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -33,6 +34,7 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'sort_no' => $request->sort_no ?? 0,
         ]);
 
         return response()->json($category, 201);
@@ -48,6 +50,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'sort_no' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -60,6 +63,7 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'sort_no' => $request->sort_no ?? 0,
         ]);
 
         return response()->json($category);
