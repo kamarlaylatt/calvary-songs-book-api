@@ -114,7 +114,7 @@ class SongController extends Controller
         $cacheDuration = 60 * 15; // 15 minutes
 
         $filters = Cache::remember($cacheKey, $cacheDuration, function () {
-            $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+            $categories = Category::orderBy('sort_no', 'asc')->get(['id', 'name', 'slug']);
             $styles = Style::orderBy('name')->get(['id', 'name']);
             $songLanguages = SongLanguage::orderBy('name')->get(['id', 'name']);
 
