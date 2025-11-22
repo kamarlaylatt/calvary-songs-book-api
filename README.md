@@ -1,61 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Calvary Songs Book API
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
 </p>
 
-## About Laravel
+<p align="center">
+  <strong>A comprehensive REST API for managing worship songs for churches</strong>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📖 About This Project
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Calvary Songs Book API** is a Laravel-based REST API designed to power a digital songs book system for churches. It provides robust endpoints for managing worship songs, categories, styles, languages, and administrative functions. The API supports mobile applications (Android/iOS) with features like authentication, advanced search, and version control.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Key Features
 
-## Learning Laravel
+- 🎵 **Song Management**: Complete CRUD operations for songs with lyrics, music notes, and YouTube links
+- 🔍 **Advanced Search**: Full-text search with filtering by category, style, language, and rating
+- 🌍 **Multi-language Support**: Songs can be tagged with multiple languages
+- 📱 **Mobile App Support**: Version checking and force update mechanism
+- 🔐 **Authentication**: Sanctum-based token authentication with role-based access control
+- 👥 **Admin Panel**: Comprehensive admin endpoints for content management
+- 📊 **Organized Content**: Categories, styles, and custom sorting capabilities
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Quick Start
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Prerequisites
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.2 or higher
+- Composer
+- Node.js & npm
+- SQLite (or MySQL/PostgreSQL)
 
-## Laravel Sponsors
+### Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+# Clone the repository
+git clone https://github.com/kamarlaylatt/calvary-songs-book-api.git
+cd calvary-songs-book-api
 
-### Premium Partners
+# Install dependencies
+composer install
+npm install
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Set up environment
+cp .env.example .env
+php artisan key:generate
 
-## Contributing
+# Create database and run migrations
+touch database/database.sqlite
+php artisan migrate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Start the development server
+composer run dev
+```
 
-## Code of Conduct
+Visit `http://localhost:8000` to access the API.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Running Tests
 
-## Security Vulnerabilities
+```bash
+composer test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Code Formatting
 
-## License
+```bash
+vendor/bin/pint
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📚 Documentation
+
+- **[PROJECT_EXPLANATION.md](PROJECT_EXPLANATION.md)** - Comprehensive project overview, architecture, and detailed explanation
+- **[ADMIN_API_DOCUMENTATION.MD](ADMIN_API_DOCUMENTATION.MD)** - Complete admin API reference
+- **[USER_API_DOCUMENTATION.MD](USER_API_DOCUMENTATION.MD)** - User-facing API endpoints
+- **[CLAUDE.md](CLAUDE.md)** - Development guidelines and AI assistant instructions
+
+## 🏗️ Technology Stack
+
+- **Framework**: Laravel 12.0
+- **Authentication**: Laravel Sanctum
+- **Database**: SQLite (production-ready for MySQL/PostgreSQL)
+- **Frontend Build**: Vite + TailwindCSS 4.0
+- **Testing**: PHPUnit with SQLite in-memory database
+- **Code Quality**: Laravel Pint
+
+## 📊 API Overview
+
+### Admin Endpoints (`/api/admin/*`)
+
+- Authentication (login, logout, profile)
+- Songs CRUD with advanced filtering
+- Categories management with custom sorting
+- Styles and Song Languages management
+- Admin users and roles management
+
+### User Endpoints (`/api/*`)
+
+- Authentication (login, logout, profile)
+- Browse songs with search and filters
+- View song details by slug
+- Get search filters
+- Check app version (force update)
+
+## 🎯 Use Cases
+
+- **For Church Administrators**: Manage song library, organize content, control user access
+- **For Church Members**: Browse and search songs, view lyrics and music notes
+- **For Mobile Developers**: Integrate REST API with iOS/Android apps, implement version control
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. Follow Laravel conventions and best practices
+2. Use Laravel Pint for code formatting
+3. Write tests for new features
+4. Update documentation when adding endpoints
+5. Maintain backward compatibility
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 🔗 Related Resources
+
+- [Laravel Documentation](https://laravel.com/docs)
+- [Laravel Sanctum](https://laravel.com/docs/sanctum)
+- [API Design Best Practices](https://laravel.com/docs/eloquent-resources)
+
+---
+
+**Built with ❤️ using Laravel** - Powered by [Laravel 12](https://laravel.com)
