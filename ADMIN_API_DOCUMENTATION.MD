@@ -837,3 +837,455 @@ This documentation provides details about the available API endpoints for admini
     }
   ]
   ```
+
+## Song Suggestions
+
+### List Song Suggestions
+
+- **Endpoint:** `GET /api/admin/song-suggestions`
+- **Description:** Retrieves a paginated list of song suggestions.
+- **Authentication:** Bearer Token
+- **Query Parameters:**
+  - `id` (optional): Filter suggestions by specific ID.
+  - `search` (optional): A string to search for in the suggestion title or lyrics.
+  - `status` (optional): Filter by status ('pending', 'approved', 'cancelled').
+  - `style_id` (optional): Filter suggestions by style ID.
+  - `user_id` (optional): Filter suggestions by user ID.
+  - `category_ids` (optional): Filter suggestions by category IDs (array or single ID).
+  - `song_language_ids` (optional): Filter suggestions by language IDs (array or single ID).
+  - `sort_by` (optional): Field to sort by (supported: 'created_at', 'id', 'status').
+  - `sort_order` (optional): Sort direction ('asc' or 'desc').
+- **Response:** A paginated JSON object with the following structure:
+  ```json
+  {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 1,
+        "title": "Suggested Song Title",
+        "youtube": "https://www.youtube.com/watch?v=...",
+        "description": "A description of the song.",
+        "song_writer": "Songwriter Name",
+        "style_id": 1,
+        "lyrics": "The lyrics of the song.",
+        "music_notes": "The music notes of the song.",
+        "status": "pending",
+        "user_id": 1,
+        "created_at": "2025-12-23T16:50:20.000000Z",
+        "updated_at": "2025-12-23T16:50:20.000000Z",
+        "style": {
+          "id": 1,
+          "name": "Style Name",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        },
+        "categories": [
+          {
+            "id": 1,
+            "name": "Category 1",
+            "slug": "category-1",
+            "description": "Category description",
+            "created_at": "2025-07-18T09:39:48.000000Z",
+            "updated_at": "2025-07-18T09:39:48.000000Z"
+          }
+        ],
+        "song_languages": [
+          {
+            "id": 1,
+            "name": "English",
+            "created_at": "2025-07-17T05:50:20.000000Z",
+            "updated_at": "2025-07-17T05:50:20.000000Z"
+          }
+        ],
+        "user": {
+          "id": 1,
+          "name": "User Name",
+          "email": "user@example.com",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
+      }
+    ],
+    "first_page_url": "http://localhost/api/admin/song-suggestions?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://localhost/api/admin/song-suggestions?page=1",
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "http://localhost/api/admin/song-suggestions?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "next_page_url": null,
+    "path": "http://localhost/api/admin/song-suggestions",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 1,
+    "total": 1
+  }
+  ```
+
+### Create Song Suggestion
+
+- **Endpoint:** `POST /api/admin/song-suggestions`
+- **Description:** Creates a new song suggestion. Note: Email field is not required when creating suggestions.
+- **Authentication:** Bearer Token
+- **Request Body:**
+  ```json
+  {
+    "title": "New Suggestion Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "A description of the song.",
+    "song_writer": "Songwriter Name",
+    "style_id": 1,
+    "lyrics": "The lyrics of the song.",
+    "music_notes": "The music notes of the song.",
+    "user_id": 1,
+    "category_ids": [1, 2],
+    "song_language_ids": [1, 2]
+  }
+  ```
+- **Response:** The newly created suggestion object:
+  ```json
+  {
+    "id": 1,
+    "title": "New Suggestion Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "A description of the song.",
+    "song_writer": "Songwriter Name",
+    "style_id": 1,
+    "lyrics": "The lyrics of the song.",
+    "music_notes": "The music notes of the song.",
+    "status": "pending",
+    "user_id": 1,
+    "created_at": "2025-12-23T16:50:20.000000Z",
+    "updated_at": "2025-12-23T16:50:20.000000Z",
+    "style": {
+      "id": 1,
+      "name": "Style Name",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category 1",
+        "slug": "category-1",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      }
+    ],
+    "user": {
+      "id": 1,
+      "name": "User Name",
+      "email": "user@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  }
+  ```
+
+### Show Song Suggestion
+
+- **Endpoint:** `GET /api/admin/song-suggestions/{suggestion}`
+- **Description:** Retrieves a single song suggestion by its ID.
+- **Authentication:** Bearer Token
+- **Response:** The suggestion object with related data:
+  ```json
+  {
+    "id": 1,
+    "title": "Suggested Song Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "A description of the song.",
+    "song_writer": "Songwriter Name",
+    "style_id": 1,
+    "lyrics": "The lyrics of the song.",
+    "music_notes": "The music notes of the song.",
+    "status": "pending",
+    "user_id": 1,
+    "created_at": "2025-12-23T16:50:20.000000Z",
+    "updated_at": "2025-12-23T16:50:20.000000Z",
+    "style": {
+      "id": 1,
+      "name": "Style Name",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category 1",
+        "slug": "category-1",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      }
+    ],
+    "user": {
+      "id": 1,
+      "name": "User Name",
+      "email": "user@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  }
+  ```
+
+### Update Song Suggestion
+
+- **Endpoint:** `PUT/PATCH /api/admin/song-suggestions/{suggestion}`
+- **Description:** Updates an existing song suggestion.
+- **Authentication:** Bearer Token
+- **Request Body:** (all fields are optional)
+  ```json
+  {
+    "title": "Updated Suggestion Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "Updated description",
+    "song_writer": "Updated Songwriter",
+    "style_id": 1,
+    "lyrics": "Updated lyrics",
+    "music_notes": "Updated music notes",
+    "status": "pending",
+    "category_ids": [1, 2, 3],
+    "song_language_ids": [1]
+  }
+  ```
+- **Response:** The updated suggestion object:
+  ```json
+  {
+    "id": 1,
+    "title": "Updated Suggestion Title",
+    "youtube": "https://www.youtube.com/watch?v=...",
+    "description": "Updated description",
+    "song_writer": "Updated Songwriter",
+    "style_id": 1,
+    "lyrics": "Updated lyrics",
+    "music_notes": "Updated music notes",
+    "status": "pending",
+    "user_id": 1,
+    "created_at": "2025-12-23T16:50:20.000000Z",
+    "updated_at": "2025-12-23T16:51:20.000000Z",
+    "style": {
+      "id": 1,
+      "name": "Style Name",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    },
+    "categories": [
+      {
+        "id": 1,
+        "name": "Category 1",
+        "slug": "category-1",
+        "description": "Category description",
+        "created_at": "2025-07-18T09:39:48.000000Z",
+        "updated_at": "2025-07-18T09:39:48.000000Z"
+      }
+    ],
+    "song_languages": [
+      {
+        "id": 1,
+        "name": "English",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      }
+    ],
+    "user": {
+      "id": 1,
+      "name": "User Name",
+      "email": "user@example.com",
+      "created_at": "2025-07-17T05:50:20.000000Z",
+      "updated_at": "2025-07-17T05:50:20.000000Z"
+    }
+  }
+  ```
+
+### Delete Song Suggestion
+
+- **Endpoint:** `DELETE /api/admin/song-suggestions/{suggestion}`
+- **Description:** Deletes a song suggestion (soft delete).
+- **Authentication:** Bearer Token
+- **Response:** `204 No Content`
+
+### Approve Song Suggestion
+
+- **Endpoint:** `POST /api/admin/song-suggestions/{suggestion}/approve`
+- **Description:** Approves a song suggestion and creates a new song from it. After approval, the suggestion status is set to 'approved' and a new song is created in the songs table with all the data from the suggestion.
+- **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "message": "Suggestion approved and song created successfully",
+    "suggestion": {
+      "id": 1,
+      "title": "Approved Song Title",
+      "youtube": "https://www.youtube.com/watch?v=...",
+      "description": "A description of the song.",
+      "song_writer": "Songwriter Name",
+      "style_id": 1,
+      "lyrics": "The lyrics of the song.",
+      "music_notes": "The music notes of the song.",
+      "status": "approved",
+      "user_id": 1,
+      "created_at": "2025-12-23T16:50:20.000000Z",
+      "updated_at": "2025-12-23T16:52:20.000000Z",
+      "style": {
+        "id": 1,
+        "name": "Style Name",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      },
+      "categories": [
+        {
+          "id": 1,
+          "name": "Category 1",
+          "slug": "category-1",
+          "description": "Category description",
+          "created_at": "2025-07-18T09:39:48.000000Z",
+          "updated_at": "2025-07-18T09:39:48.000000Z"
+        }
+      ],
+      "song_languages": [
+        {
+          "id": 1,
+          "name": "English",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
+      ],
+      "user": {
+        "id": 1,
+        "name": "User Name",
+        "email": "user@example.com",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      }
+    },
+    "song": {
+      "id": 1,
+      "code": 1,
+      "title": "Approved Song Title",
+      "slug": "approved-song-title-1",
+      "youtube": "https://www.youtube.com/watch?v=...",
+      "description": "A description of the song.",
+      "song_writer": "Songwriter Name",
+      "style_id": 1,
+      "lyrics": "The lyrics of the song.",
+      "music_notes": "The music notes of the song.",
+      "popular_rating": null,
+      "createable_type": "App\\Models\\Admin",
+      "createable_id": 1,
+      "created_at": "2025-12-23T16:52:20.000000Z",
+      "updated_at": "2025-12-23T16:52:20.000000Z",
+      "style": {
+        "id": 1,
+        "name": "Style Name",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      },
+      "categories": [
+        {
+          "id": 1,
+          "name": "Category 1",
+          "slug": "category-1",
+          "description": "Category description",
+          "created_at": "2025-07-18T09:39:48.000000Z",
+          "updated_at": "2025-07-18T09:39:48.000000Z"
+        }
+      ],
+      "song_languages": [
+        {
+          "id": 1,
+          "name": "English",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
+      ]
+    }
+  }
+  ```
+
+### Cancel Song Suggestion
+
+- **Endpoint:** `POST /api/admin/song-suggestions/{suggestion}/cancel`
+- **Description:** Cancels/rejects a song suggestion. The suggestion status is set to 'cancelled'.
+- **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "message": "Suggestion cancelled successfully",
+    "suggestion": {
+      "id": 1,
+      "title": "Cancelled Song Title",
+      "youtube": "https://www.youtube.com/watch?v=...",
+      "description": "A description of the song.",
+      "song_writer": "Songwriter Name",
+      "style_id": 1,
+      "lyrics": "The lyrics of the song.",
+      "music_notes": "The music notes of the song.",
+      "status": "cancelled",
+      "user_id": 1,
+      "created_at": "2025-12-23T16:50:20.000000Z",
+      "updated_at": "2025-12-23T16:53:20.000000Z",
+      "style": {
+        "id": 1,
+        "name": "Style Name",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      },
+      "categories": [
+        {
+          "id": 1,
+          "name": "Category 1",
+          "slug": "category-1",
+          "description": "Category description",
+          "created_at": "2025-07-18T09:39:48.000000Z",
+          "updated_at": "2025-07-18T09:39:48.000000Z"
+        }
+      ],
+      "song_languages": [
+        {
+          "id": 1,
+          "name": "English",
+          "created_at": "2025-07-17T05:50:20.000000Z",
+          "updated_at": "2025-07-17T05:50:20.000000Z"
+        }
+      ],
+      "user": {
+        "id": 1,
+        "name": "User Name",
+        "email": "user@example.com",
+        "created_at": "2025-07-17T05:50:20.000000Z",
+        "updated_at": "2025-07-17T05:50:20.000000Z"
+      }
+    }
+  }
+  ```

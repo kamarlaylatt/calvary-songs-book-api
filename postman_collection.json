@@ -1,0 +1,583 @@
+{
+  "info": {
+    "name": "Calvary Songs Book API - Admin",
+    "description": "Admin API endpoints for managing songs, categories, styles, languages, admins, and song suggestions",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/api/admin",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": ["{{base_url}}"],
+              "path": ["logout"]
+            }
+          }
+        },
+        {
+          "name": "Admin Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Song Suggestions",
+      "item": [
+        {
+          "name": "List Song Suggestions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/song-suggestions?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, approved, cancelled"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "style_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "user_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Song Suggestion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Song Suggestion\",\n  \"lyrics\": \"Lyrics of the song...\",\n  \"youtube\": \"https://www.youtube.com/watch?v=example\",\n  \"description\": \"Description of the suggested song\",\n  \"song_writer\": \"Songwriter Name\",\n  \"style_id\": 1,\n  \"music_notes\": \"Music notes...\",\n  \"user_id\": null,\n  \"category_ids\": [1, 2],\n  \"song_language_ids\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/song-suggestions",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions"]
+            }
+          }
+        },
+        {
+          "name": "Show Song Suggestion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/song-suggestions/1",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Song Suggestion",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Song Suggestion\",\n  \"lyrics\": \"Updated lyrics...\",\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/song-suggestions/1",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Song Suggestion",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/song-suggestions/1",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Approve Song Suggestion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/song-suggestions/1/approve",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions", "1", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Song Suggestion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/song-suggestions/1/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["song-suggestions", "1", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Songs",
+      "item": [
+        {
+          "name": "List Songs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/songs",
+              "host": ["{{base_url}}"],
+              "path": ["songs"]
+            }
+          }
+        },
+        {
+          "name": "Create Song",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Song\",\n  \"lyrics\": \"Lyrics...\",\n  \"youtube\": \"https://www.youtube.com/watch?v=example\",\n  \"description\": \"Description\",\n  \"song_writer\": \"Writer\",\n  \"style_id\": 1,\n  \"music_notes\": \"Notes...\",\n  \"popular_rating\": 3,\n  \"category_ids\": [1],\n  \"song_language_ids\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/songs",
+              "host": ["{{base_url}}"],
+              "path": ["songs"]
+            }
+          }
+        },
+        {
+          "name": "Show Song",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/songs/1",
+              "host": ["{{base_url}}"],
+              "path": ["songs", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Song",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Song\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/songs/1",
+              "host": ["{{base_url}}"],
+              "path": ["songs", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Song",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/songs/1",
+              "host": ["{{base_url}}"],
+              "path": ["songs", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Styles",
+      "item": [
+        {
+          "name": "List Styles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/styles",
+              "host": ["{{base_url}}"],
+              "path": ["styles"]
+            }
+          }
+        },
+        {
+          "name": "Create Style",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Style\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/styles",
+              "host": ["{{base_url}}"],
+              "path": ["styles"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Category\",\n  \"description\": \"Description\",\n  \"sort_no\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Song Languages",
+      "item": [
+        {
+          "name": "List Song Languages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/song-languages",
+              "host": ["{{base_url}}"],
+              "path": ["song-languages"]
+            }
+          }
+        },
+        {
+          "name": "Create Song Language",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Spanish\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/song-languages",
+              "host": ["{{base_url}}"],
+              "path": ["song-languages"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admins",
+      "item": [
+        {
+          "name": "List Admins",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admins",
+              "host": ["{{base_url}}"],
+              "path": ["admins"]
+            }
+          }
+        },
+        {
+          "name": "Create Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Admin\",\n  \"email\": \"newadmin@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"status\": \"active\",\n  \"roles\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admins",
+              "host": ["{{base_url}}"],
+              "path": ["admins"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roles",
+              "host": ["{{base_url}}"],
+              "path": ["roles"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
