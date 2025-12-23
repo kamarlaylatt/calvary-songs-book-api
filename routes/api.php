@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\SongController;
+use App\Http\Controllers\Api\User\SuggestSongController;
 use App\Http\Controllers\Api\User\VersionController;
 
 Route::prefix('admin')->group(function () {
@@ -16,6 +17,9 @@ Route::get('/songs', [SongController::class, 'index']);
 Route::get('/songs/{song:slug}', [SongController::class, 'show']);
 Route::get('/categories', [SongController::class, 'categories']);
 Route::get('/search-filters', [SongController::class, 'searchFilters']);
+
+// Suggest songs API
+Route::post('/suggest-songs', [SuggestSongController::class, 'store']);
 
 // Version check endpoint
 Route::post('/check-version', [VersionController::class, 'checkForceUpdate']);
