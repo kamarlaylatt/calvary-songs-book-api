@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\SongController;
+use App\Http\Controllers\Api\Admin\SongSuggestionController;
 use App\Http\Controllers\Api\Admin\StyleController;
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\SongLanguageController;
@@ -21,4 +22,9 @@ Route::middleware('auth:admin')->group(function () {
     Route::apiResource('/song-languages', SongLanguageController::class);
     Route::apiResource('/admins', AdminController::class);
     Route::get('/roles', [RoleController::class, 'index']);
+    
+    // Song Suggestions
+    Route::apiResource('/song-suggestions', SongSuggestionController::class);
+    Route::post('/song-suggestions/{songSuggestion}/approve', [SongSuggestionController::class, 'approve']);
+    Route::post('/song-suggestions/{songSuggestion}/cancel', [SongSuggestionController::class, 'cancel']);
 });

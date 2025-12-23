@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('songs', function (Blueprint $table) {
-            $table->fullText(['title']);
-            $table->fullText(['song_writer']);
-            $table->fullText(['lyrics']);
-        });
+        if (config('database.default') !== 'sqlite') {
+            Schema::table('songs', function (Blueprint $table) {
+                $table->fullText(['title']);
+                $table->fullText(['song_writer']);
+                $table->fullText(['lyrics']);
+            });
+        }
     }
 
     /**
@@ -23,10 +25,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('songs', function (Blueprint $table) {
-            $table->dropFullText(['title']);
-            $table->dropFullText(['song_writer']);
-            $table->dropFullText(['lyrics']);
-        });
+        if (config('database.default') !== 'sqlite') {
+            Schema::table('songs', function (Blueprint $table) {
+                $table->dropFullText(['title']);
+                $table->dropFullText(['song_writer']);
+                $table->dropFullText(['lyrics']);
+            });
+        }
     }
 };
