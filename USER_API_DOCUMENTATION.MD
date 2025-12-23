@@ -293,6 +293,91 @@ Note: When multiple filters are provided, they are combined with AND.
   }
   ```
 
+## Suggest Songs
+
+### Submit Song Suggestion
+- **Endpoint:** `POST /api/suggest-songs`
+- **Description:** Allows users to suggest new songs from the mobile app. The suggested song will be pending approval by admin, who will send an email notification for approval status.
+- **Request Body:**
+  ```json
+  {
+    "code": 123,
+    "title": "Amazing Grace",
+    "youtube": "https://youtube.com/watch?v=example",
+    "description": "A beautiful hymn",
+    "song_writer": "John Newton",
+    "style_id": 1,
+    "key": "G",
+    "lyrics": "Amazing grace how sweet the sound\nThat saved a wretch like me",
+    "music_notes": "Musical notation here",
+    "popular_rating": 5,
+    "email": "user@example.com"
+  }
+  ```
+- **Required Fields:**
+  - `code` (integer): Numeric code for the song
+  - `title` (string): Song title (max 255 characters)
+  - `lyrics` (string): Song lyrics
+  - `email` (string): Email address for approval notifications
+  
+- **Optional Fields:**
+  - `youtube` (string): YouTube URL (max 255 characters)
+  - `description` (string): Song description
+  - `song_writer` (string): Name of the song writer (max 255 characters)
+  - `style_id` (integer): ID of the song style (must exist in styles table)
+  - `key` (string): Musical key (max 255 characters)
+  - `music_notes` (string): Musical notation or notes
+  - `popular_rating` (integer): Rating from 0-5
+  
+- **Success Response (201):**
+  ```json
+  {
+    "message": "Song suggestion submitted successfully",
+    "data": {
+      "id": 1,
+      "code": 123,
+      "title": "Amazing Grace",
+      "slug": "amazing-grace",
+      "youtube": "https://youtube.com/watch?v=example",
+      "description": "A beautiful hymn",
+      "song_writer": "John Newton",
+      "style_id": 1,
+      "key": "G",
+      "lyrics": "Amazing grace how sweet the sound\nThat saved a wretch like me",
+      "music_notes": "Musical notation here",
+      "popular_rating": 5,
+      "email": "user@example.com",
+      "status": 1,
+      "created_at": "2025-12-23T15:20:00.000000Z",
+      "updated_at": "2025-12-23T15:20:00.000000Z"
+    }
+  }
+  ```
+  
+- **Validation Error Response (422):**
+  ```json
+  {
+    "message": "The code field is required. (and 2 more errors)",
+    "errors": {
+      "code": ["The code field is required."],
+      "lyrics": ["The lyrics field is required."],
+      "email": ["The email field is required."]
+    }
+  }
+  ```
+  
+- **Status Field Values:**
+  - `0`: Cancelled
+  - `1`: Pending (default)
+  - `2`: Approved
+  
+- **Notes:**
+  - The slug is automatically generated from the title
+  - Duplicate slugs are handled with numeric suffixes (e.g., "amazing-grace-1")
+  - The status is automatically set to `1` (pending) upon submission
+  - Admin will review the suggestion and send an email notification about the approval status
+
+
 ## Version Check (Force Update)
 
 ### Check App Version
