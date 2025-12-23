@@ -8,6 +8,7 @@ use App\Models\SongSuggestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class SongSuggestionController extends Controller
 {
@@ -168,28 +169,35 @@ class SongSuggestionController extends Controller
         /** @var \App\Models\Admin $admin */
         $admin = auth('admin')->user();
         
-        // Create a song from the suggestion
-        $song = $admin->songs()->create([
-            'code' => Song::max('code') + 1,
-            'title' => $songSuggestion->title,
-            'slug' => Str::slug($songSuggestion->title) . '-' . (Song::max('code') + 1),
-            'youtube' => $songSuggestion->youtube,
-            'description' => $songSuggestion->description,
-            'song_writer' => $songSuggestion->song_writer,
-            'style_id' => $songSuggestion->style_id,
-            'lyrics' => $songSuggestion->lyrics,
-            'music_notes' => $songSuggestion->music_notes,
-        ]);
+        // Use database transaction to prevent race conditions
+        $song = \DB::transaction(function () use ($admin, $songSuggestion) {
+            // Get next code within transaction
+            $nextCode = Song::max('code') + 1;
+            
+            // Create a song from the suggestion
+            $song = $admin->songs()->create([
+                'code' => $nextCode,
+                'title' => $songSuggestion->title,
+                'slug' => Str::slug($songSuggestion->title) . '-' . $nextCode,
+                'youtube' => $songSuggestion->youtube,
+                'description' => $songSuggestion->description,
+                'song_writer' => $songSuggestion->song_writer,
+                'style_id' => $songSuggestion->style_id,
+                'lyrics' => $songSuggestion->lyrics,
+                'music_notes' => $songSuggestion->music_notes,
+            ]);
 
-        // Sync categories and languages
-        $song->categories()->sync($songSuggestion->categories->pluck('id'));
-        $song->songLanguages()->sync($songSuggestion->songLanguages->pluck('id'));
+            // Sync categories and languages
+            $song->categories()->sync($songSuggestion->categories->pluck('id'));
+            $song->songLanguages()->sync($songSuggestion->songLanguages->pluck('id'));
 
-        // Update suggestion status
-        $songSuggestion->update(['status' => 'approved']);
+            // Update suggestion status
+            $songSuggestion->update(['status' => 'approved']);
+            
+            return $song;
+        });
 
         $this->clearSuggestionCaches();
-        Cache::flush(); // Also clear song caches
 
         return response()->json([
             'message' => 'Suggestion approved and song created successfully',
