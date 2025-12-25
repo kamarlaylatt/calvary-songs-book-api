@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('music_notes')->nullable();
             $table->unsignedTinyInteger('popular_rating')->default(0);
             $table->nullableMorphs('createable');
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->unsignedTinyInteger('status')->default(1)->comment('0: cancel, 1: pending, 2: approve');
             $table->softDeletes();
             $table->timestamps();

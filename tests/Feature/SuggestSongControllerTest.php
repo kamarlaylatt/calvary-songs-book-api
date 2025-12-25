@@ -79,7 +79,6 @@ class SuggestSongControllerTest extends TestCase
             'code' => 456,
             'title' => 'How Great Thou Art',
             'lyrics' => 'O Lord my God, when I in awesome wonder',
-            'email' => 'user2@example.com',
         ];
 
         $response = $this->postJson('/api/suggest-songs', $data);
@@ -92,7 +91,7 @@ class SuggestSongControllerTest extends TestCase
         $this->assertDatabaseHas('suggest_songs', [
             'code' => 456,
             'title' => 'How Great Thou Art',
-            'email' => 'user2@example.com',
+            'email' => null,
             'status' => 1,
         ]);
     }
@@ -101,13 +100,13 @@ class SuggestSongControllerTest extends TestCase
     {
         $data = [
             'title' => 'Test Song',
-            // Missing code, lyrics, email
+            // Missing code, lyrics
         ];
 
         $response = $this->postJson('/api/suggest-songs', $data);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['code', 'lyrics', 'email']);
+            ->assertJsonValidationErrors(['code', 'lyrics']);
     }
 
     public function test_email_must_be_valid_format()

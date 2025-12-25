@@ -297,7 +297,7 @@ Note: When multiple filters are provided, they are combined with AND.
 
 ### Submit Song Suggestion
 - **Endpoint:** `POST /api/suggest-songs`
-- **Description:** Allows users to suggest new songs from the mobile app. The suggested song will be pending approval by admin, who will send an email notification for approval status.
+- **Description:** Allows users to suggest new songs from the mobile app. The suggested song will be pending approval by admin.
 - **Request Body:**
   ```json
   {
@@ -310,15 +310,13 @@ Note: When multiple filters are provided, they are combined with AND.
     "key": "G",
     "lyrics": "Amazing grace how sweet the sound\nThat saved a wretch like me",
     "music_notes": "Musical notation here",
-    "popular_rating": 5,
-    "email": "user@example.com"
+    "popular_rating": 5
   }
   ```
 - **Required Fields:**
   - `code` (integer): Numeric code for the song
   - `title` (string): Song title (max 255 characters)
   - `lyrics` (string): Song lyrics
-  - `email` (string): Email address for approval notifications
   
 - **Optional Fields:**
   - `youtube` (string): YouTube URL (max 255 characters)
@@ -328,6 +326,7 @@ Note: When multiple filters are provided, they are combined with AND.
   - `key` (string): Musical key (max 255 characters)
   - `music_notes` (string): Musical notation or notes
   - `popular_rating` (integer): Rating from 0-5
+  - `email` (string): Email address for approval notifications (optional)
   
 - **Success Response (201):**
   ```json
@@ -346,7 +345,6 @@ Note: When multiple filters are provided, they are combined with AND.
       "lyrics": "Amazing grace how sweet the sound\nThat saved a wretch like me",
       "music_notes": "Musical notation here",
       "popular_rating": 5,
-      "email": "user@example.com",
       "status": 1,
       "created_at": "2025-12-23T15:20:00.000000Z",
       "updated_at": "2025-12-23T15:20:00.000000Z"
@@ -360,8 +358,7 @@ Note: When multiple filters are provided, they are combined with AND.
     "message": "The code field is required. (and 2 more errors)",
     "errors": {
       "code": ["The code field is required."],
-      "lyrics": ["The lyrics field is required."],
-      "email": ["The email field is required."]
+      "lyrics": ["The lyrics field is required."]
     }
   }
   ```

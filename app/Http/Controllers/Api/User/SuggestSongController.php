@@ -26,7 +26,7 @@ class SuggestSongController extends Controller
             'lyrics' => 'required|string',
             'music_notes' => 'nullable|string',
             'popular_rating' => 'nullable|integer|min:0|max:5',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
         ]);
 
         // Generate unique slug from title
