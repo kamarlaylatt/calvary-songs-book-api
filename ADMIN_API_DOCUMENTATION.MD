@@ -863,6 +863,7 @@ This documentation provides details about the available API endpoints for admini
     -   `search`: Search by title or lyrics
     -   `style_id`: Filter by style id
     -   `category_id`: Filter by category id
+    -   `song_language_id`: Filter by song language id
 -   **Response:** Paginated list of suggestion objects.
 
 ### Update Suggestion
@@ -882,7 +883,8 @@ This documentation provides details about the available API endpoints for admini
     -   `popular_rating` (integer 0-5)
     -   `email` (string, optional)
     -   `category_ids` (array, optional): Array of category IDs to associate with the suggested song
--   **Response:** Updated suggestion object including `categories`.
+    -   `song_language_ids` (array, optional): Array of song language IDs to associate with the suggested song
+-   **Response:** Updated suggestion object including `categories` and `songLanguages`.
 
 ### Approve Suggestion
 

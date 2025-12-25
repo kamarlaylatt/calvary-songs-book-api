@@ -17,7 +17,7 @@ class SuggestSongController extends Controller
     public function index(Request $request)
     {
         $suggestions = SuggestSong::query()
-            ->with(['categories', 'style'])
+            ->with(['categories', 'songLanguages', 'style'])
             ->when($request->id, function ($query, $id) {
                 $query->where('id', $id);
             })
@@ -38,6 +38,11 @@ class SuggestSongController extends Controller
                     $q->where('categories.id', $categoryId);
                 });
             })
+            ->when($request->song_language_id, function ($query, $songLanguageId) {
+                $query->whereHas('songLanguages', function ($q) use ($songLanguageId) {
+                    $q->where('song_languages.id', $songLanguageId);
+                });
+            })
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(15);
@@ -50,7 +55,7 @@ class SuggestSongController extends Controller
      */
     public function show(SuggestSong $suggestSong)
     {
-        return response()->json($suggestSong->load(['categories', 'style']));
+        return response()->json($suggestSong->load(['categories', 'songLanguages', 'style']));
     }
 
     /**
@@ -71,11 +76,14 @@ class SuggestSongController extends Controller
             'email' => 'nullable|email|max:255',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'integer|exists:categories,id',
+            'song_language_ids' => 'nullable|array',
+            'song_language_ids.*' => 'integer|exists:song_languages,id',
         ]);
 
-        // Do not persist category_ids directly on model
+        // Do not persist category_ids and song_language_ids directly on model
         $categoryIds = $request->input('category_ids');
-        unset($validated['category_ids']);
+        $songLanguageIds = $request->input('song_language_ids');
+        unset($validated['category_ids'], $validated['song_language_ids']);
 
         $suggestSong->update($validated);
 
@@ -89,7 +97,16 @@ class SuggestSongController extends Controller
             }
         }
 
-        return response()->json($suggestSong->load('categories'));
+        if (!is_null($songLanguageIds)) {
+            if (is_numeric($songLanguageIds)) {
+                $songLanguageIds = [(int) $songLanguageIds];
+            }
+            if (is_array($songLanguageIds) && !empty($songLanguageIds)) {
+                $suggestSong->songLanguages()->sync($songLanguageIds);
+            }
+        }
+
+        return response()->json($suggestSong->load(['categories', 'songLanguages']));
     }
 
     /**
@@ -123,10 +140,15 @@ class SuggestSongController extends Controller
                 ? $admin->songs()->create($songData)
                 : Song::create($songData);
 
-            // Copy categories from suggestion to created song
+            // Copy categories and songLanguages from suggestion to created song
             $categoryIds = $suggestSong->categories()->pluck('categories.id')->all();
             if (!empty($categoryIds)) {
                 $song->categories()->sync($categoryIds);
+            }
+
+            $songLanguageIds = $suggestSong->songLanguages()->pluck('song_languages.id')->all();
+            if (!empty($songLanguageIds)) {
+                $song->songLanguages()->sync($songLanguageIds);
             }
 
             $suggestSong->update(['status' => SuggestSong::STATUS_APPROVED]);

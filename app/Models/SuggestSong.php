@@ -52,6 +52,6 @@ class SuggestSong extends Model
 
     public function songLanguages()
     {
-        return $this->belongsToMany(SongLanguage::class);
+        return $this->belongsToMany(SongLanguage::class, 'song_language_suggest_song');
     }
 }

@@ -1,6 +1,6 @@
 {
 						"url": {
-							"raw": "{{base_url}}/api/admin/suggest-songs?status=1&category_id=1",
+							"raw": "{{base_url}}/api/admin/suggest-songs?status=1&category_id=1&song_language_id=1",
 		"name": "Calvary Songs Book API",
 		"description": "API collection for Calvary Songs Book mobile application",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -235,7 +235,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Amazing Grace\",\n  \"youtube\": \"https://youtube.com/watch?v=example\",\n  \"description\": \"A beautiful hymn\",\n  \"song_writer\": \"John Newton\",\n  \"style_id\": 1,\n  \"key\": \"G\",\n  \"lyrics\": \"Amazing grace how sweet the sound\\nThat saved a wretch like me\",\n  \"music_notes\": \"Musical notation here\",\n  \"popular_rating\": 5,\n  \"email\": \"user@example.com\",\n  \"category_ids\": [1, 2]\n}"
+							"raw": "{\n  \"title\": \"Amazing Grace\",\n  \"youtube\": \"https://youtube.com/watch?v=example\",\n  \"description\": \"A beautiful hymn\",\n  \"song_writer\": \"John Newton\",\n  \"style_id\": 1,\n  \"key\": \"G\",\n  \"lyrics\": \"Amazing grace how sweet the sound\\nThat saved a wretch like me\",\n  \"music_notes\": \"Musical notation here\",\n  \"popular_rating\": 5,\n  \"email\": \"user@example.com\",\n  \"category_ids\": [1, 2],\n  \"song_language_ids\": [1, 2]\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/suggest-songs",
@@ -247,7 +247,7 @@
 								"suggest-songs"
 							]
 						},
-						"description": "Submit a new song suggestion from mobile app with categories. Required fields: title, lyrics"
+						"description": "Submit a new song suggestion from mobile app with categories and song languages. Required fields: title, lyrics"
 					}
 				},
 				{
@@ -352,7 +352,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/admin/suggest-songs?status=1",
+							"raw": "{{base_url}}/api/admin/suggest-songs?status=1&category_id=1&song_language_id=1",
 							"host": [
 								"{{base_url}}"
 							],
@@ -369,6 +369,18 @@
 									"disabled": false
 								},
 								{
+									"key": "category_id",
+									"value": "1",
+									"description": "Filter by category ID",
+									"disabled": false
+								},
+								{
+									"key": "song_language_id",
+									"value": "1",
+									"description": "Filter by song language ID",
+									"disabled": false
+								},
+								{
 									"key": "search",
 									"value": "",
 									"description": "Search title, lyrics, or code",
@@ -376,7 +388,7 @@
 								}
 							]
 						},
-						"description": "List suggested songs with optional filters"
+						"description": "List suggested songs with optional filters, including category_id and song_language_id"
 					}
 				},
 				{
@@ -395,7 +407,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Updated Title\",\n  \"lyrics\": \"Updated lyrics\",\n  \"popular_rating\": 4,\n  \"category_ids\": [1, 2]\n}"
+							"raw": "{\n  \"title\": \"Updated Title\",\n  \"lyrics\": \"Updated lyrics\",\n  \"popular_rating\": 4,\n  \"category_ids\": [1, 2],\n  \"song_language_ids\": [1, 2]\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/admin/suggest-songs/1",
@@ -409,7 +421,7 @@
 								"1"
 							]
 						},
-						"description": "Update a suggested song record, including categories via category_ids"
+						"description": "Update a suggested song record, including categories and song languages via category_ids and song_language_ids"
 					}
 				},
 				{

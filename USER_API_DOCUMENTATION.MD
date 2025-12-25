@@ -316,7 +316,8 @@ Note: When multiple filters are provided, they are combined with AND.
         "music_notes": "Musical notation here",
         "popular_rating": 5,
         "email": "user@example.com",
-        "category_ids": [1, 3]
+        "category_ids": [1, 3],
+        "song_language_ids": [1, 2]
     }
     ```
 -   **Required Fields:**
@@ -332,6 +333,7 @@ Note: When multiple filters are provided, they are combined with AND.
     -   `popular_rating` (integer): Rating from 0-5
     -   `email` (string): Email address for approval notifications (optional)
     -   `category_ids` (array): Array of category IDs to associate with the suggested song (optional, each ID must exist in categories table)
+    -   `song_language_ids` (array): Array of song language IDs to associate with the suggested song (optional, each ID must exist in song_languages table)
 -   **Success Response (201):**
     ```json
     {

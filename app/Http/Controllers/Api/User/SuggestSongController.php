@@ -27,13 +27,17 @@ class SuggestSongController extends Controller
             // Categories can be provided as an array of IDs.
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'integer|exists:categories,id',
+            // Song languages can be provided as an array of IDs.
+            'song_language_ids' => 'nullable|array',
+            'song_language_ids.*' => 'integer|exists:song_languages,id',
         ]);
 
         $validated['status'] = SuggestSong::STATUS_PENDING; // Default to pending
 
-        // Do not persist category_ids directly on model
+        // Do not persist category_ids and song_language_ids directly on model
         $categoryIds = $request->input('category_ids');
-        unset($validated['category_ids']);
+        $songLanguageIds = $request->input('song_language_ids');
+        unset($validated['category_ids'], $validated['song_language_ids']);
 
         $suggestSong = SuggestSong::create($validated);
 
@@ -47,9 +51,18 @@ class SuggestSongController extends Controller
             }
         }
 
+        if (!is_null($songLanguageIds)) {
+            if (is_numeric($songLanguageIds)) {
+                $songLanguageIds = [(int) $songLanguageIds];
+            }
+            if (is_array($songLanguageIds) && !empty($songLanguageIds)) {
+                $suggestSong->songLanguages()->sync($songLanguageIds);
+            }
+        }
+
         return response()->json([
             'message' => 'Song suggestion submitted successfully',
-            'data' => $suggestSong->load('categories')
+            'data' => $suggestSong->load(['categories', 'songLanguages'])
         ], 201);
     }
 }
