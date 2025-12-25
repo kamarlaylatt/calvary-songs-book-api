@@ -235,7 +235,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"code\": 123,\n  \"title\": \"Amazing Grace\",\n  \"youtube\": \"https://youtube.com/watch?v=example\",\n  \"description\": \"A beautiful hymn\",\n  \"song_writer\": \"John Newton\",\n  \"style_id\": 1,\n  \"key\": \"G\",\n  \"lyrics\": \"Amazing grace how sweet the sound\\nThat saved a wretch like me\",\n  \"music_notes\": \"Musical notation here\",\n  \"popular_rating\": 5,\n  \"email\": \"user@example.com\"\n}"
+							"raw": "{\n  \"code\": 123,\n  \"title\": \"Amazing Grace\",\n  \"youtube\": \"https://youtube.com/watch?v=example\",\n  \"description\": \"A beautiful hymn\",\n  \"song_writer\": \"John Newton\",\n  \"style_id\": 1,\n  \"key\": \"G\",\n  \"lyrics\": \"Amazing grace how sweet the sound\\nThat saved a wretch like me\",\n  \"music_notes\": \"Musical notation here\",\n  \"popular_rating\": 5\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/suggest-songs",
@@ -247,7 +247,7 @@
 								"suggest-songs"
 							]
 						},
-						"description": "Submit a new song suggestion from mobile app. Required fields: code, title, lyrics, email"
+						"description": "Submit a new song suggestion from mobile app. Required fields: code, title, lyrics"
 					}
 				},
 				{
@@ -262,7 +262,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"code\": 456,\n  \"title\": \"How Great Thou Art\",\n  \"lyrics\": \"O Lord my God, when I in awesome wonder\\nConsider all the worlds Thy hands have made\",\n  \"email\": \"user@example.com\"\n}"
+							"raw": "{\n  \"code\": 456,\n  \"title\": \"How Great Thou Art\",\n  \"lyrics\": \"O Lord my God, when I in awesome wonder\\nConsider all the worlds Thy hands have made\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/suggest-songs",
@@ -274,7 +274,7 @@
 								"suggest-songs"
 							]
 						},
-						"description": "Submit a song suggestion with only required fields (code, title, lyrics, email)"
+						"description": "Submit a song suggestion with only required fields (code, title, lyrics)"
 					}
 				}
 			]
@@ -337,6 +337,134 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Admin - Suggest Songs",
+			"item": [
+				{
+					"name": "List Suggestions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/suggest-songs?status=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"suggest-songs"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "1",
+									"description": "Filter by status (0 cancel, 1 pending, 2 approved)",
+									"disabled": false
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search title, lyrics, or code",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List suggested songs with optional filters"
+					}
+				},
+				{
+					"name": "Update Suggestion",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Title\",\n  \"lyrics\": \"Updated lyrics\",\n  \"popular_rating\": 4\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/suggest-songs/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"suggest-songs",
+								"1"
+							]
+						},
+						"description": "Update a suggested song record"
+					}
+				},
+				{
+					"name": "Approve Suggestion",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/suggest-songs/1/approve",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"suggest-songs",
+								"1",
+								"approve"
+							]
+						},
+						"description": "Approve a suggestion and create a song"
+					}
+				},
+				{
+					"name": "Cancel Suggestion",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/suggest-songs/1/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"suggest-songs",
+								"1",
+								"cancel"
+							]
+						},
+						"description": "Cancel a suggested song"
+					}
+				}
+			]
 		}
 	],
 	"variable": [
@@ -347,6 +475,11 @@
 		},
 		{
 			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
 			"value": "",
 			"type": "string"
 		}

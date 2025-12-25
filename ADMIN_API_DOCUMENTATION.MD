@@ -837,3 +837,62 @@ This documentation provides details about the available API endpoints for admini
     }
   ]
   ```
+
+## Suggest Songs
+
+### List Suggestions
+
+- **Endpoint:** `GET /api/admin/suggest-songs`
+- **Description:** Retrieves a paginated list of suggested songs.
+- **Authentication:** Bearer Token
+- **Query Parameters (optional):**
+  - `status`: Filter by suggestion status (`0` cancelled, `1` pending, `2` approved)
+  - `search`: Search by title, lyrics, or exact code
+  - `style_id`: Filter by style id
+- **Response:** Paginated list of suggestion objects.
+
+### Update Suggestion
+
+- **Endpoint:** `PUT /api/admin/suggest-songs/{suggestSong}`
+- **Description:** Updates a suggested song record.
+- **Authentication:** Bearer Token
+- **Request Body (any of the following):**
+  - `code` (integer)
+  - `title` (string)
+  - `youtube` (string)
+  - `description` (string)
+  - `song_writer` (string)
+  - `style_id` (integer)
+  - `key` (string)
+  - `lyrics` (string)
+  - `music_notes` (string)
+  - `popular_rating` (integer 0-5)
+  - `email` (string, optional)
+- **Response:** Updated suggestion object.
+
+### Approve Suggestion
+
+- **Endpoint:** `POST /api/admin/suggest-songs/{suggestSong}/approve`
+- **Description:** Approves a suggestion, creates a song record from its data, and sets status to `2`.
+- **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "message": "Suggestion approved and song created",
+    "suggestion": { "id": 1, "status": 2 },
+    "song": { "id": 10, "title": "Sample", "code": 100, "slug": "sample-100" }
+  }
+  ```
+
+### Cancel Suggestion
+
+- **Endpoint:** `POST /api/admin/suggest-songs/{suggestSong}/cancel`
+- **Description:** Cancels a suggestion by setting status to `0`.
+- **Authentication:** Bearer Token
+- **Response:**
+  ```json
+  {
+    "message": "Suggestion cancelled",
+    "suggestion": { "id": 1, "status": 0 }
+  }
+  ```

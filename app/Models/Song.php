@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Song extends Model
 {
@@ -34,6 +35,26 @@ class Song extends Model
         return [
             'popular_rating' => 'integer|min:0|max:5',
         ];
+    }
+
+    public static function generateSlug(string $title, int $code): string
+    {
+        return Str::slug($title) . '-' . $code;
+    }
+
+    public static function nextCode(bool $lockForUpdate = false): int
+    {
+        if ($lockForUpdate) {
+            // For PostgreSQL compatibility, lock actual rows instead of using aggregate with lock
+            $maxCode = static::query()
+                ->orderByDesc('code')
+                ->lockForUpdate()
+                ->value('code');
+        } else {
+            $maxCode = static::max('code');
+        }
+
+        return (int) ($maxCode ?? 0) + 1;
     }
 
     public function createable()

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Song;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 
 class SongController extends Controller
@@ -18,7 +17,7 @@ class SongController extends Controller
         // Create a cache key based on request parameters
         $cacheKey = 'songs.admin.index.' . http_build_query($request->all());
 
-        $songs = cache()->remember($cacheKey, 300, function () use ($request) {
+        $songs = Cache::remember($cacheKey, 300, function () use ($request) {
             return Song::query()
                 ->when($request->id, function ($query, $id) {
                     $query->where('id', $id);
@@ -86,9 +85,11 @@ class SongController extends Controller
 
         /** @var \App\Models\Admin $admin */
         $admin = auth('admin')->user();
+        $nextCode = Song::nextCode();
+
         $song = $admin->songs()->create($validated + [
-            'code' => Song::max('code') + 1,
-            'slug' => Str::slug($request->title) . '-' . (Song::max('code') + 1),
+            'code' => $nextCode,
+            'slug' => Song::generateSlug($request->title, $nextCode),
         ]);
 
         if ($request->has('category_ids')) {
@@ -134,7 +135,7 @@ class SongController extends Controller
 
         $this->authorize('update', $song);
 
-        $song->update($validated + ['slug' => Str::slug($request->title) . '-' . $song->code]);
+        $song->update($validated + ['slug' => Song::generateSlug($request->title, $song->code)]);
 
         if ($request->has('category_ids')) {
             $song->categories()->sync($request->category_ids);
@@ -168,10 +169,8 @@ class SongController extends Controller
      */
     private function clearSongCaches(): void
     {
-        // Flush the cache to ensure all song-related cached lists are invalidated.
-        // This clears keys produced by both:
-        // - Admin: songs_index_* (md5 hash)
-        // - User: songs.index.* (http_build_query)
+        // Flush all song-related cache keys
+        // Database driver doesn't support tags, so we flush by pattern
         Cache::flush();
     }
 }
