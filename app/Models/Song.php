@@ -42,6 +42,21 @@ class Song extends Model
         return Str::slug($title) . '-' . $code;
     }
 
+    public static function nextCode(bool $lockForUpdate = false): int
+    {
+        if ($lockForUpdate) {
+            // For PostgreSQL compatibility, lock actual rows instead of using aggregate with lock
+            $maxCode = static::query()
+                ->orderByDesc('code')
+                ->lockForUpdate()
+                ->value('code');
+        } else {
+            $maxCode = static::max('code');
+        }
+
+        return (int) ($maxCode ?? 0) + 1;
+    }
+
     public function createable()
     {
         return $this->morphTo();

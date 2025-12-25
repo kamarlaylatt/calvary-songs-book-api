@@ -8,7 +8,6 @@ use App\Models\SuggestSong;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 
 class SuggestSongController extends Controller
 {
@@ -27,8 +26,7 @@ class SuggestSongController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('lyrics', 'like', "%{$search}%")
-                        ->orWhere('code', $search);
+                        ->orWhere('lyrics', 'like', "%{$search}%");
                 });
             })
             ->when($request->style_id, function ($query, $styleId) {
@@ -55,7 +53,6 @@ class SuggestSongController extends Controller
     public function update(Request $request, SuggestSong $suggestSong)
     {
         $validated = $request->validate([
-            'code' => 'sometimes|required|integer',
             'title' => 'sometimes|required|string|max:255',
             'youtube' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -67,10 +64,6 @@ class SuggestSongController extends Controller
             'popular_rating' => 'nullable|integer|min:0|max:5',
             'email' => 'nullable|email|max:255',
         ]);
-
-        if (isset($validated['title'])) {
-            $validated['slug'] = SuggestSong::generateUniqueSlug($validated['title'], $suggestSong->id);
-        }
 
         $suggestSong->update($validated);
 
@@ -87,20 +80,9 @@ class SuggestSongController extends Controller
         }
 
         $admin = auth('admin')->user();
-
         $song = DB::transaction(function () use ($suggestSong, $admin) {
-            $codeSnapshot = Song::query()
-                ->lockForUpdate()
-                ->selectRaw('MAX(code) as max_code')
-                ->selectRaw('SUM(CASE WHEN code = ? THEN 1 ELSE 0 END) as is_code_taken', [$suggestSong->code])
-                ->first();
 
-            $maxCode = (int) ($codeSnapshot->max_code ?? 0);
-            $code = $suggestSong->code;
-
-            if ($code === null || (int) $codeSnapshot->is_code_taken > 0) {
-                $code = $maxCode + 1;
-            }
+            $code = Song::nextCode(true);
 
             $songData = [
                 'code' => $code,
@@ -124,7 +106,7 @@ class SuggestSongController extends Controller
             return $song;
         });
 
-        Cache::tags(['songs'])->flush();
+        Cache::flush();
 
         return response()->json([
             'message' => 'Suggestion approved and song created',
@@ -138,6 +120,10 @@ class SuggestSongController extends Controller
      */
     public function cancel(SuggestSong $suggestSong)
     {
+        if ($suggestSong->status !== SuggestSong::STATUS_PENDING) {
+            return response()->json(['message' => 'Only pending suggestions can be cancelled'], 422);
+        }
+
         $suggestSong->update(['status' => SuggestSong::STATUS_CANCELLED]);
 
         return response()->json([

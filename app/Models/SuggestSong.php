@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class SuggestSong extends Model
 {
@@ -16,9 +15,7 @@ class SuggestSong extends Model
     public const STATUS_APPROVED = 2;
 
     protected $fillable = [
-        'code',
         'title',
-        'slug',
         'youtube',
         'description',
         'song_writer',
@@ -56,38 +53,5 @@ class SuggestSong extends Model
     public function songLanguages()
     {
         return $this->belongsToMany(SongLanguage::class);
-    }
-
-    public static function generateUniqueSlug(string $title, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($title);
-
-        $existingSlugs = static::where('slug', 'like', $baseSlug . '%')
-            ->when($ignoreId, function ($query, $ignoreId) {
-                $query->where('id', '!=', $ignoreId);
-            })
-            ->pluck('slug');
-
-        if (!$existingSlugs->contains($baseSlug)) {
-            return $baseSlug;
-        }
-
-        $maxSuffix = $existingSlugs
-            ->map(function ($existingSlug) use ($baseSlug) {
-                if ($existingSlug === $baseSlug) {
-                    return 0;
-                }
-
-                if (str_starts_with($existingSlug, $baseSlug . '-')) {
-                    $suffix = substr($existingSlug, strlen($baseSlug) + 1);
-                    return ctype_digit($suffix) ? (int) $suffix : null;
-                }
-
-                return null;
-            })
-            ->filter()
-            ->max() ?? 0;
-
-        return $baseSlug . '-' . ($maxSuffix + 1);
     }
 }

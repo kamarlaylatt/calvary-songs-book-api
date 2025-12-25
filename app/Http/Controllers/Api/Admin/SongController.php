@@ -17,7 +17,7 @@ class SongController extends Controller
         // Create a cache key based on request parameters
         $cacheKey = 'songs.admin.index.' . http_build_query($request->all());
 
-        $songs = Cache::tags(['songs'])->remember($cacheKey, 300, function () use ($request) {
+        $songs = Cache::remember($cacheKey, 300, function () use ($request) {
             return Song::query()
                 ->when($request->id, function ($query, $id) {
                     $query->where('id', $id);
@@ -85,7 +85,7 @@ class SongController extends Controller
 
         /** @var \App\Models\Admin $admin */
         $admin = auth('admin')->user();
-        $nextCode = Song::max('code') + 1;
+        $nextCode = Song::nextCode();
 
         $song = $admin->songs()->create($validated + [
             'code' => $nextCode,
@@ -169,10 +169,8 @@ class SongController extends Controller
      */
     private function clearSongCaches(): void
     {
-        // Flush the song cache tag to ensure all song-related cached lists are invalidated.
-        // This clears keys produced by both:
-        // - Admin: songs.admin.index.*
-        // - User: songs.index.*
-        Cache::tags(['songs'])->flush();
+        // Flush all song-related cache keys
+        // Database driver doesn't support tags, so we flush by pattern
+        Cache::flush();
     }
 }

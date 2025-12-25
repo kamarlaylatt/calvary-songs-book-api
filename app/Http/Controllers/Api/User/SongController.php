@@ -20,7 +20,7 @@ class SongController extends Controller
         $cacheKey = 'songs.index.' . http_build_query($request->all());
         $cacheDuration = 60 * 30; // 30 minutes (half hour)
 
-        $songs = Cache::tags(['songs'])->remember($cacheKey, $cacheDuration, function () use ($request) {
+        $songs = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
             $songsQuery = Song::query()
                 ->when($request->search, function ($query, $search) {
                     if (is_numeric($search)) {
@@ -71,7 +71,7 @@ class SongController extends Controller
         $cacheKey = "song.show.{$slug}";
         $cacheDuration = 60 * 15; // 15 minutes
 
-        $song = Cache::tags(['songs'])->remember($cacheKey, $cacheDuration, function () use ($slug) {
+        $song = Cache::remember($cacheKey, $cacheDuration, function () use ($slug) {
             $song = Song::where('slug', $slug)->firstOrFail();
             $song->load('style', 'categories', 'songLanguages');
 

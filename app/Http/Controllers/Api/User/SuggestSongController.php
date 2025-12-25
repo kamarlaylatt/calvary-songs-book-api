@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Models\SuggestSong;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class SuggestSongController extends Controller
 {
@@ -15,7 +14,6 @@ class SuggestSongController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|integer',
             'title' => 'required|string|max:255',
             'youtube' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -28,7 +26,6 @@ class SuggestSongController extends Controller
             'email' => 'nullable|email|max:255',
         ]);
 
-        $validated['slug'] = SuggestSong::generateUniqueSlug($validated['title']);
         $validated['status'] = SuggestSong::STATUS_PENDING; // Default to pending
 
         $suggestSong = SuggestSong::create($validated);

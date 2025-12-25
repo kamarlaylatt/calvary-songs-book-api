@@ -16,7 +16,7 @@ class SuggestSongControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create a test style
         $this->style = Style::create(['name' => 'Gospel']);
     }
@@ -24,7 +24,6 @@ class SuggestSongControllerTest extends TestCase
     public function test_can_submit_song_suggestion_with_all_fields()
     {
         $data = [
-            'code' => 123,
             'title' => 'Amazing Grace',
             'youtube' => 'https://youtube.com/watch?v=test',
             'description' => 'A beautiful hymn',
@@ -44,9 +43,7 @@ class SuggestSongControllerTest extends TestCase
                 'message',
                 'data' => [
                     'id',
-                    'code',
                     'title',
-                    'slug',
                     'email',
                     'status',
                     'created_at',
@@ -56,18 +53,14 @@ class SuggestSongControllerTest extends TestCase
             ->assertJson([
                 'message' => 'Song suggestion submitted successfully',
                 'data' => [
-                    'code' => 123,
                     'title' => 'Amazing Grace',
-                    'slug' => 'amazing-grace',
                     'email' => 'user@example.com',
                     'status' => 1, // pending
                 ]
             ]);
 
         $this->assertDatabaseHas('suggest_songs', [
-            'code' => 123,
             'title' => 'Amazing Grace',
-            'slug' => 'amazing-grace',
             'email' => 'user@example.com',
             'status' => 1,
         ]);
@@ -76,7 +69,6 @@ class SuggestSongControllerTest extends TestCase
     public function test_can_submit_song_suggestion_with_required_fields_only()
     {
         $data = [
-            'code' => 456,
             'title' => 'How Great Thou Art',
             'lyrics' => 'O Lord my God, when I in awesome wonder',
         ];
@@ -89,7 +81,6 @@ class SuggestSongControllerTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('suggest_songs', [
-            'code' => 456,
             'title' => 'How Great Thou Art',
             'email' => null,
             'status' => 1,
@@ -99,20 +90,18 @@ class SuggestSongControllerTest extends TestCase
     public function test_cannot_submit_without_required_fields()
     {
         $data = [
-            'title' => 'Test Song',
-            // Missing code, lyrics
+            // Missing title, lyrics
         ];
 
         $response = $this->postJson('/api/suggest-songs', $data);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['code', 'lyrics']);
+            ->assertJsonValidationErrors(['title', 'lyrics']);
     }
 
     public function test_email_must_be_valid_format()
     {
         $data = [
-            'code' => 789,
             'title' => 'Test Song',
             'lyrics' => 'Test lyrics',
             'email' => 'invalid-email',
@@ -127,7 +116,6 @@ class SuggestSongControllerTest extends TestCase
     public function test_style_id_must_exist_in_database()
     {
         $data = [
-            'code' => 999,
             'title' => 'Test Song',
             'lyrics' => 'Test lyrics',
             'email' => 'user@example.com',
@@ -140,64 +128,9 @@ class SuggestSongControllerTest extends TestCase
             ->assertJsonValidationErrors(['style_id']);
     }
 
-    public function test_slug_is_generated_from_title()
-    {
-        $data = [
-            'code' => 111,
-            'title' => 'Test Song With Spaces',
-            'lyrics' => 'Test lyrics',
-            'email' => 'user@example.com',
-        ];
-
-        $response = $this->postJson('/api/suggest-songs', $data);
-
-        $response->assertStatus(201);
-
-        $this->assertDatabaseHas('suggest_songs', [
-            'title' => 'Test Song With Spaces',
-            'slug' => 'test-song-with-spaces',
-        ]);
-    }
-
-    public function test_duplicate_slugs_are_handled_with_counter()
-    {
-        // Create first song
-        $data1 = [
-            'code' => 111,
-            'title' => 'Duplicate Title',
-            'lyrics' => 'Test lyrics',
-            'email' => 'user1@example.com',
-        ];
-
-        $this->postJson('/api/suggest-songs', $data1)->assertStatus(201);
-
-        // Create second song with same title
-        $data2 = [
-            'code' => 222,
-            'title' => 'Duplicate Title',
-            'lyrics' => 'Different lyrics',
-            'email' => 'user2@example.com',
-        ];
-
-        $response = $this->postJson('/api/suggest-songs', $data2);
-
-        $response->assertStatus(201);
-
-        $this->assertDatabaseHas('suggest_songs', [
-            'title' => 'Duplicate Title',
-            'slug' => 'duplicate-title',
-        ]);
-
-        $this->assertDatabaseHas('suggest_songs', [
-            'title' => 'Duplicate Title',
-            'slug' => 'duplicate-title-1',
-        ]);
-    }
-
     public function test_popular_rating_must_be_between_0_and_5()
     {
         $data = [
-            'code' => 333,
             'title' => 'Test Song',
             'lyrics' => 'Test lyrics',
             'email' => 'user@example.com',
@@ -213,7 +146,6 @@ class SuggestSongControllerTest extends TestCase
     public function test_status_defaults_to_pending()
     {
         $data = [
-            'code' => 444,
             'title' => 'Test Song',
             'lyrics' => 'Test lyrics',
             'email' => 'user@example.com',
