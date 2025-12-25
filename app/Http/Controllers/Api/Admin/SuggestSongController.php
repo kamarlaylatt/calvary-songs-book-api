@@ -17,6 +17,7 @@ class SuggestSongController extends Controller
     public function index(Request $request)
     {
         $suggestions = SuggestSong::query()
+            ->with(['categories', 'style'])
             ->when($request->id, function ($query, $id) {
                 $query->where('id', $id);
             })
@@ -32,6 +33,11 @@ class SuggestSongController extends Controller
             ->when($request->style_id, function ($query, $styleId) {
                 $query->where('style_id', $styleId);
             })
+            ->when($request->category_id, function ($query, $categoryId) {
+                $query->whereHas('categories', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                });
+            })
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(15);
@@ -44,7 +50,7 @@ class SuggestSongController extends Controller
      */
     public function show(SuggestSong $suggestSong)
     {
-        return response()->json($suggestSong);
+        return response()->json($suggestSong->load(['categories', 'style']));
     }
 
     /**
@@ -63,11 +69,27 @@ class SuggestSongController extends Controller
             'music_notes' => 'nullable|string',
             'popular_rating' => 'nullable|integer|min:0|max:5',
             'email' => 'nullable|email|max:255',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'integer|exists:categories,id',
         ]);
+
+        // Do not persist category_ids directly on model
+        $categoryIds = $request->input('category_ids');
+        unset($validated['category_ids']);
 
         $suggestSong->update($validated);
 
-        return response()->json($suggestSong);
+        // Allow single ID or array; normalize and sync if provided
+        if (!is_null($categoryIds)) {
+            if (is_numeric($categoryIds)) {
+                $categoryIds = [(int) $categoryIds];
+            }
+            if (is_array($categoryIds) && !empty($categoryIds)) {
+                $suggestSong->categories()->sync($categoryIds);
+            }
+        }
+
+        return response()->json($suggestSong->load('categories'));
     }
 
     /**
@@ -100,6 +122,12 @@ class SuggestSongController extends Controller
             $song = $admin
                 ? $admin->songs()->create($songData)
                 : Song::create($songData);
+
+            // Copy categories from suggestion to created song
+            $categoryIds = $suggestSong->categories()->pluck('categories.id')->all();
+            if (!empty($categoryIds)) {
+                $song->categories()->sync($categoryIds);
+            }
 
             $suggestSong->update(['status' => SuggestSong::STATUS_APPROVED]);
 

@@ -860,8 +860,9 @@ This documentation provides details about the available API endpoints for admini
 -   **Authentication:** Bearer Token
 -   **Query Parameters (optional):**
     -   `status`: Filter by suggestion status (`0` cancelled, `1` pending, `2` approved)
-    -   `search`: Search by title, lyrics, or exact code
+    -   `search`: Search by title or lyrics
     -   `style_id`: Filter by style id
+    -   `category_id`: Filter by category id
 -   **Response:** Paginated list of suggestion objects.
 
 ### Update Suggestion
@@ -870,7 +871,6 @@ This documentation provides details about the available API endpoints for admini
 -   **Description:** Updates a suggested song record.
 -   **Authentication:** Bearer Token
 -   **Request Body (any of the following):**
-    -   `code` (integer)
     -   `title` (string)
     -   `youtube` (string)
     -   `description` (string)
@@ -881,7 +881,8 @@ This documentation provides details about the available API endpoints for admini
     -   `music_notes` (string)
     -   `popular_rating` (integer 0-5)
     -   `email` (string, optional)
--   **Response:** Updated suggestion object.
+    -   `category_ids` (array, optional): Array of category IDs to associate with the suggested song
+-   **Response:** Updated suggestion object including `categories`.
 
 ### Approve Suggestion
 
@@ -897,7 +898,9 @@ This documentation provides details about the available API endpoints for admini
             "id": 10,
             "title": "Sample",
             "code": 100,
-            "slug": "sample-100"
+            "slug": "sample-100",
+            "categories": [{ "id": 1, "name": "Worship" }],
+            "song_languages": []
         }
     }
     ```
