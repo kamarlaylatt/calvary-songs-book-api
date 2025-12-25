@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Models\SuggestSong;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class SuggestSongController extends Controller
@@ -29,18 +28,8 @@ class SuggestSongController extends Controller
             'email' => 'nullable|email|max:255',
         ]);
 
-        // Generate unique slug from title
-        $slug = Str::slug($validated['title']);
-        $originalSlug = $slug;
-        $counter = 1;
-        
-        while (SuggestSong::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
-            $counter++;
-        }
-
-        $validated['slug'] = $slug;
-        $validated['status'] = 1; // Default to pending
+        $validated['slug'] = SuggestSong::generateUniqueSlug($validated['title']);
+        $validated['status'] = SuggestSong::STATUS_PENDING; // Default to pending
 
         $suggestSong = SuggestSong::create($validated);
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Song;
 use App\Models\SuggestSong;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -68,7 +69,7 @@ class SuggestSongController extends Controller
         ]);
 
         if (isset($validated['title'])) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $suggestSong->id);
+            $validated['slug'] = SuggestSong::generateUniqueSlug($validated['title'], $suggestSong->id);
         }
 
         $suggestSong->update($validated);
@@ -81,37 +82,49 @@ class SuggestSongController extends Controller
      */
     public function approve(SuggestSong $suggestSong)
     {
-        if ($suggestSong->status === 2) {
+        if ($suggestSong->status === SuggestSong::STATUS_APPROVED) {
             return response()->json(['message' => 'Suggestion already approved'], 422);
         }
 
         $admin = auth('admin')->user();
 
-        $code = $suggestSong->code ?? (Song::max('code') + 1);
-        if (Song::where('code', $code)->exists()) {
-            $code = Song::max('code') + 1;
-        }
+        $song = DB::transaction(function () use ($suggestSong, $admin) {
+            $codeSnapshot = Song::query()
+                ->lockForUpdate()
+                ->selectRaw('MAX(code) as max_code')
+                ->selectRaw('SUM(CASE WHEN code = ? THEN 1 ELSE 0 END) as is_code_taken', [$suggestSong->code])
+                ->first();
 
-        $songData = [
-            'code' => $code,
-            'title' => $suggestSong->title,
-            'slug' => Str::slug($suggestSong->title) . '-' . $code,
-            'youtube' => $suggestSong->youtube,
-            'description' => $suggestSong->description,
-            'song_writer' => $suggestSong->song_writer,
-            'style_id' => $suggestSong->style_id,
-            'lyrics' => $suggestSong->lyrics,
-            'music_notes' => $suggestSong->music_notes,
-            'popular_rating' => $suggestSong->popular_rating,
-        ];
+            $maxCode = (int) ($codeSnapshot->max_code ?? 0);
+            $code = $suggestSong->code;
 
-        $song = $admin
-            ? $admin->songs()->create($songData)
-            : Song::create($songData);
+            if ($code === null || (int) $codeSnapshot->is_code_taken > 0) {
+                $code = $maxCode + 1;
+            }
 
-        $suggestSong->update(['status' => 2]);
+            $songData = [
+                'code' => $code,
+                'title' => $suggestSong->title,
+                'slug' => Song::generateSlug($suggestSong->title, $code),
+                'youtube' => $suggestSong->youtube,
+                'description' => $suggestSong->description,
+                'song_writer' => $suggestSong->song_writer,
+                'style_id' => $suggestSong->style_id,
+                'lyrics' => $suggestSong->lyrics,
+                'music_notes' => $suggestSong->music_notes,
+                'popular_rating' => $suggestSong->popular_rating,
+            ];
 
-        Cache::flush();
+            $song = $admin
+                ? $admin->songs()->create($songData)
+                : Song::create($songData);
+
+            $suggestSong->update(['status' => SuggestSong::STATUS_APPROVED]);
+
+            return $song;
+        });
+
+        Cache::tags(['songs'])->flush();
 
         return response()->json([
             'message' => 'Suggestion approved and song created',
@@ -125,31 +138,11 @@ class SuggestSongController extends Controller
      */
     public function cancel(SuggestSong $suggestSong)
     {
-        $suggestSong->update(['status' => 0]);
+        $suggestSong->update(['status' => SuggestSong::STATUS_CANCELLED]);
 
         return response()->json([
             'message' => 'Suggestion cancelled',
             'suggestion' => $suggestSong,
         ]);
-    }
-
-    private function generateUniqueSlug(string $title, int $ignoreId = null): string
-    {
-        $slug = Str::slug($title);
-        $originalSlug = $slug;
-        $counter = 1;
-
-        while (
-            SuggestSong::where('slug', $slug)
-                ->when($ignoreId, function ($query, $ignoreId) {
-                    $query->where('id', '!=', $ignoreId);
-                })
-                ->exists()
-        ) {
-            $slug = $originalSlug . '-' . $counter;
-            $counter++;
-        }
-
-        return $slug;
     }
 }

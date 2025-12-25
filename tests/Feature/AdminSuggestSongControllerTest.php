@@ -21,7 +21,7 @@ class AdminSuggestSongControllerTest extends TestCase
 
         $this->admin = Admin::factory()->create([
             'status' => 'active',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('TestPass!234'),
         ]);
     }
 
