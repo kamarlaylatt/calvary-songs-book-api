@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SuggestSongApproved;
 use App\Models\Song;
 use App\Models\SuggestSong;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 
 class SuggestSongController extends Controller
 {
@@ -157,6 +159,10 @@ class SuggestSongController extends Controller
         });
 
         Cache::flush();
+
+        if (!empty($suggestSong->email)) {
+            Mail::to($suggestSong->email)->send(new SuggestSongApproved($suggestSong, $song));
+        }
 
         return response()->json([
             'message' => 'Suggestion approved and song created',
