@@ -13,6 +13,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::orderBy('sort_no', 'asc')->latest()->paginate(10);
+
         return response()->json($categories);
     }
 
@@ -74,6 +75,7 @@ class CategoryController extends Controller
         $this->authorize('delete', $category);
 
         $category->delete();
+
         return response()->json(null, 204);
     }
 }

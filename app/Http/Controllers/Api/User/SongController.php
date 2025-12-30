@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Song;
 use App\Models\Category;
+use App\Models\Song;
 use App\Models\SongLanguage;
 use App\Models\Style;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class SongController extends Controller
      */
     public function index(Request $request)
     {
-        $cacheKey = 'songs.index.' . http_build_query($request->all());
+        $cacheKey = 'songs.index.'.http_build_query($request->all());
         $cacheDuration = 60 * 30; // 30 minutes (half hour)
 
         $songs = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
@@ -56,7 +56,7 @@ class SongController extends Controller
             }
 
             return [
-                'data' => $songsQuery->get()
+                'data' => $songsQuery->get(),
             ];
         });
 
@@ -102,6 +102,7 @@ class SongController extends Controller
     public function categories()
     {
         $categories = Category::orderBy('sort_no', 'asc')->get(['id', 'name', 'slug']);
+
         return response()->json($categories);
     }
 
@@ -121,7 +122,7 @@ class SongController extends Controller
             return [
                 'categories' => $categories,
                 'styles' => $styles,
-                'song_languages' => $songLanguages
+                'song_languages' => $songLanguages,
             ];
         });
 

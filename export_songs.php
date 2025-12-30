@@ -11,18 +11,18 @@ $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    exit('Connection failed: '.$conn->connect_error);
 }
 
 // SQL query to select data from the songs table
-$sql = "SELECT title, youtube, song_writer, style, `key`, lyrics, music_notes FROM songs";
+$sql = 'SELECT title, youtube, song_writer, style, `key`, lyrics, music_notes FROM songs';
 $result = $conn->query($sql);
 
 // Open a file for writing
 $fp = fopen('songs.csv', 'w');
 
 // Add the headers to the CSV file
-fputcsv($fp, array('title', 'youtube', 'description', 'song_writer', 'style', 'key', 'lyrics', 'music_notes'));
+fputcsv($fp, ['title', 'youtube', 'description', 'song_writer', 'style', 'key', 'lyrics', 'music_notes']);
 
 // Loop through the result set and write each row to the CSV file
 if ($result->num_rows > 0) {
@@ -35,4 +35,4 @@ if ($result->num_rows > 0) {
 fclose($fp);
 $conn->close();
 
-echo "CSV file created successfully.";
+echo 'CSV file created successfully.';

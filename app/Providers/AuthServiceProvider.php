@@ -3,14 +3,16 @@
 namespace App\Providers;
 
 use App\Models\Admin;
+use App\Models\AppVersion;
 use App\Models\Category;
 use App\Models\Song;
 use App\Models\SongLanguage;
 use App\Models\Style;
 use App\Policies\AdminPolicy;
+use App\Policies\AppVersionPolicy;
 use App\Policies\CategoryPolicy;
-use App\Policies\SongPolicy;
 use App\Policies\SongLanguagePolicy;
+use App\Policies\SongPolicy;
 use App\Policies\StylePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -23,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Admin::class => AdminPolicy::class,
+        AppVersion::class => AppVersionPolicy::class,
         Category::class => CategoryPolicy::class,
         Song::class => SongPolicy::class,
         SongLanguage::class => SongLanguagePolicy::class,

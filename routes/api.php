@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\SongController;
 use App\Http\Controllers\Api\User\SuggestSongController;
 use App\Http\Controllers\Api\User\VersionController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
-    require __DIR__ . '/admin.php';
+    require __DIR__.'/admin.php';
 });
 
 Route::post('/login', [AuthController::class, 'login']);

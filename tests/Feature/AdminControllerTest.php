@@ -13,19 +13,21 @@ class AdminControllerTest extends TestCase
     use RefreshDatabase;
 
     protected $admin;
+
     protected $role1;
+
     protected $role2;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create a test admin user for authentication
         $this->admin = Admin::factory()->create([
             'status' => 'active',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
-        
+
         // Create some roles
         $this->role1 = Role::factory()->create(['name' => 'admin']);
         $this->role2 = Role::factory()->create(['name' => 'editor']);
@@ -43,7 +45,7 @@ class AdminControllerTest extends TestCase
             ->assertJsonStructure([
                 'current_page',
                 'data' => [
-                    '*' => ['id', 'name', 'email', 'status', 'roles']
+                    '*' => ['id', 'name', 'email', 'status', 'roles'],
                 ],
                 'first_page_url',
                 'from',
@@ -55,7 +57,7 @@ class AdminControllerTest extends TestCase
                 'per_page',
                 'prev_page_url',
                 'to',
-                'total'
+                'total',
             ]);
     }
 
@@ -67,7 +69,7 @@ class AdminControllerTest extends TestCase
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'status' => 'active',
-            'roles' => [$this->role1->id]
+            'roles' => [$this->role1->id],
         ];
 
         $response = $this->actingAs($this->admin, 'admin')
@@ -75,18 +77,18 @@ class AdminControllerTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'id', 'name', 'email', 'status', 'roles'
+                'id', 'name', 'email', 'status', 'roles',
             ])
             ->assertJson([
                 'name' => 'New Admin',
                 'email' => 'newadmin@example.com',
-                'status' => 'active'
+                'status' => 'active',
             ]);
 
         $this->assertDatabaseHas('admins', [
             'name' => 'New Admin',
             'email' => 'newadmin@example.com',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $newAdmin = Admin::where('email', 'newadmin@example.com')->first();
@@ -97,7 +99,7 @@ class AdminControllerTest extends TestCase
     public function test_can_show_admin()
     {
         $admin = Admin::factory()->create([
-            'status' => 'active'
+            'status' => 'active',
         ]);
         $admin->roles()->attach($this->role1);
 
@@ -109,10 +111,10 @@ class AdminControllerTest extends TestCase
                 'id' => $admin->id,
                 'name' => $admin->name,
                 'email' => $admin->email,
-                'status' => $admin->status
+                'status' => $admin->status,
             ])
             ->assertJsonStructure([
-                'id', 'name', 'email', 'status', 'roles'
+                'id', 'name', 'email', 'status', 'roles',
             ]);
     }
 
@@ -121,7 +123,7 @@ class AdminControllerTest extends TestCase
         $admin = Admin::factory()->create([
             'name' => 'Original Name',
             'email' => 'original@example.com',
-            'status' => 'active'
+            'status' => 'active',
         ]);
         $admin->roles()->attach($this->role1);
 
@@ -129,7 +131,7 @@ class AdminControllerTest extends TestCase
             'name' => 'Updated Name',
             'email' => 'updated@example.com',
             'status' => 'inactive',
-            'roles' => [$this->role2->id]
+            'roles' => [$this->role2->id],
         ];
 
         $response = $this->actingAs($this->admin, 'admin')
@@ -139,17 +141,17 @@ class AdminControllerTest extends TestCase
             ->assertJson([
                 'name' => 'Updated Name',
                 'email' => 'updated@example.com',
-                'status' => 'inactive'
+                'status' => 'inactive',
             ])
             ->assertJsonStructure([
-                'id', 'name', 'email', 'status', 'roles'
+                'id', 'name', 'email', 'status', 'roles',
             ]);
 
         $this->assertDatabaseHas('admins', [
             'id' => $admin->id,
             'name' => 'Updated Name',
             'email' => 'updated@example.com',
-            'status' => 'inactive'
+            'status' => 'inactive',
         ]);
 
         $updatedAdmin = Admin::find($admin->id);
@@ -160,7 +162,7 @@ class AdminControllerTest extends TestCase
     public function test_can_delete_admin()
     {
         $admin = Admin::factory()->create([
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response = $this->actingAs($this->admin, 'admin')
@@ -170,9 +172,9 @@ class AdminControllerTest extends TestCase
 
         // Check that the admin was soft deleted
         $this->assertDatabaseHas('admins', [
-            'id' => $admin->id
+            'id' => $admin->id,
         ]);
-        
+
         $deletedAdmin = Admin::withTrashed()->find($admin->id);
         $this->assertNotNull($deletedAdmin->deleted_at);
     }
@@ -183,7 +185,7 @@ class AdminControllerTest extends TestCase
             'name' => '', // Required field
             'email' => 'invalid-email', // Invalid format
             'password' => 'short', // Too short
-            'status' => 'invalid-status' // Invalid status
+            'status' => 'invalid-status', // Invalid status
         ];
 
         $response = $this->actingAs($this->admin, 'admin')
@@ -199,7 +201,7 @@ class AdminControllerTest extends TestCase
 
         $data = [
             'email' => 'invalid-email', // Invalid format
-            'status' => 'invalid-status' // Invalid status
+            'status' => 'invalid-status', // Invalid status
         ];
 
         $response = $this->actingAs($this->admin, 'admin')

@@ -47,8 +47,8 @@ class SuggestSongControllerTest extends TestCase
                     'email',
                     'status',
                     'created_at',
-                    'updated_at'
-                ]
+                    'updated_at',
+                ],
             ])
             ->assertJson([
                 'message' => 'Song suggestion submitted successfully',
@@ -56,7 +56,7 @@ class SuggestSongControllerTest extends TestCase
                     'title' => 'Amazing Grace',
                     'email' => 'user@example.com',
                     'status' => 1, // pending
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('suggest_songs', [

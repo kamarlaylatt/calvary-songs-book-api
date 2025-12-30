@@ -13,6 +13,7 @@ class SuggestSongApproved extends Mailable
     use Queueable, SerializesModels;
 
     public Song $song;
+
     public SuggestSong $suggestSong;
 
     public function __construct(SuggestSong $suggestSong, Song $song)

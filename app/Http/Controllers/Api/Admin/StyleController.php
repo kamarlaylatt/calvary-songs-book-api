@@ -46,7 +46,7 @@ class StyleController extends Controller
     public function update(Request $request, Style $style)
     {
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255|unique:styles,name,' . $style->id,
+            'name' => 'sometimes|required|string|max:255|unique:styles,name,'.$style->id,
         ]);
 
         $this->authorize('update', $style);

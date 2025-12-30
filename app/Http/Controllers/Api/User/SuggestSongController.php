@@ -42,27 +42,27 @@ class SuggestSongController extends Controller
         $suggestSong = SuggestSong::create($validated);
 
         // Allow single ID or array; normalize and sync if provided
-        if (!is_null($categoryIds)) {
+        if (! is_null($categoryIds)) {
             if (is_numeric($categoryIds)) {
                 $categoryIds = [(int) $categoryIds];
             }
-            if (is_array($categoryIds) && !empty($categoryIds)) {
+            if (is_array($categoryIds) && ! empty($categoryIds)) {
                 $suggestSong->categories()->sync($categoryIds);
             }
         }
 
-        if (!is_null($songLanguageIds)) {
+        if (! is_null($songLanguageIds)) {
             if (is_numeric($songLanguageIds)) {
                 $songLanguageIds = [(int) $songLanguageIds];
             }
-            if (is_array($songLanguageIds) && !empty($songLanguageIds)) {
+            if (is_array($songLanguageIds) && ! empty($songLanguageIds)) {
                 $suggestSong->songLanguages()->sync($songLanguageIds);
             }
         }
 
         return response()->json([
             'message' => 'Song suggestion submitted successfully',
-            'data' => $suggestSong->load(['categories', 'songLanguages'])
+            'data' => $suggestSong->load(['categories', 'songLanguages']),
         ], 201);
     }
 }

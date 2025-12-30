@@ -39,7 +39,7 @@ class Song extends Model
 
     public static function generateSlug(string $title, int $code): string
     {
-        return Str::slug($title) . '-' . $code;
+        return Str::slug($title).'-'.$code;
     }
 
     public static function nextCode(bool $lockForUpdate = false): int

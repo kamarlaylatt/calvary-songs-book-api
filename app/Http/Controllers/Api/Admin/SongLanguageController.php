@@ -46,7 +46,7 @@ class SongLanguageController extends Controller
     public function update(Request $request, SongLanguage $songLanguage)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:song_languages,name,' . $songLanguage->id,
+            'name' => 'required|string|max:255|unique:song_languages,name,'.$songLanguage->id,
         ]);
 
         $this->authorize('update', $songLanguage);

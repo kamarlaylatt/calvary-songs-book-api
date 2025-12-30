@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class DbDumpCommand extends Command
 {
@@ -31,6 +31,7 @@ class DbDumpCommand extends Command
 
         if (empty($config) || $config['driver'] !== 'pgsql') {
             $this->error('PostgreSQL connection not configured correctly.');
+
             return 1;
         }
 
@@ -41,11 +42,11 @@ class DbDumpCommand extends Command
         $password = $config['password'];
 
         $path = $this->option('path') ?: storage_path('app/db-dumps');
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path, 0755, true);
         }
-        $fileName = 'dump_' . now()->format('Y-m-d_H-i-s') . '.sql';
-        $filePath = $path . '/' . $fileName;
+        $fileName = 'dump_'.now()->format('Y-m-d_H-i-s').'.sql';
+        $filePath = $path.'/'.$fileName;
 
         $command = "pg_dump -h {$host} -p {$port} -U {$username} -d {$dbName}";
 
@@ -61,9 +62,10 @@ class DbDumpCommand extends Command
         } catch (ProcessFailedException $exception) {
             $this->error('The database dump failed.');
             $this->error($exception->getMessage());
+
             return 1;
         }
-        
+
         return 0;
     }
 }

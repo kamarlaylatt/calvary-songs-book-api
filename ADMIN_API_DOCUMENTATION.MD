@@ -907,7 +907,7 @@ This documentation provides details about the available API endpoints for admini
     }
     ```
 
-### Cancel Suggestion
+ ### Cancel Suggestion
 
 -   **Endpoint:** `POST /api/admin/suggest-songs/{suggestSong}/cancel`
 -   **Description:** Cancels a suggestion by setting status to `0`.
@@ -919,3 +919,160 @@ This documentation provides details about the available API endpoints for admini
         "suggestion": { "id": 1, "status": 0 }
     }
     ```
+
+## App Versions
+
+### List App Versions
+
+-   **Endpoint:** `GET /api/admin/app-versions`
+-   **Description:** Retrieves a paginated list of app versions.
+-   **Authentication:** Bearer Token
+-   **Query Parameters:**
+    -   `platform` (optional): Filter by platform (`android` or `ios`)
+-   **Response:** A paginated JSON object with app version data:
+    ```json
+    {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 1,
+                "platform": "android",
+                "version_code": 100,
+                "version_name": "1.0.0",
+                "update_url": "https://play.google.com/store/apps/details?id=com.example.app",
+                "release_notes": "Initial release with basic features",
+                "is_force_update": false,
+                "created_at": "2025-09-20T12:47:38.000000Z",
+                "updated_at": "2025-09-20T12:47:38.000000Z"
+            },
+            {
+                "id": 2,
+                "platform": "ios",
+                "version_code": 200,
+                "version_name": "2.0.0",
+                "update_url": "https://apps.apple.com/app/id1234567890",
+                "release_notes": "Major update with new features",
+                "is_force_update": true,
+                "created_at": "2025-09-21T10:30:00.000000Z",
+                "updated_at": "2025-09-21T10:30:00.000000Z"
+            }
+        ],
+        "first_page_url": "http://localhost/api/admin/app-versions?page=1",
+        "from": 1,
+        "last_page": 1,
+        "last_page_url": "http://localhost/api/admin/app-versions?page=1",
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/admin/app-versions?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "next_page_url": null,
+        "path": "http://localhost/api/admin/app-versions",
+        "per_page": 10,
+        "prev_page_url": null,
+        "to": 2,
+        "total": 2
+    }
+    ```
+
+### Create App Version
+
+-   **Endpoint:** `POST /api/admin/app-versions`
+-   **Description:** Creates a new app version.
+-   **Authentication:** Bearer Token
+-   **Request Body:**
+    ```json
+    {
+        "platform": "android",
+        "version_code": 101,
+        "version_name": "1.0.1",
+        "update_url": "https://play.google.com/store/apps/details?id=com.example.app",
+        "release_notes": "Bug fixes and performance improvements",
+        "is_force_update": false
+    }
+    ```
+-   **Response:** The newly created app version object:
+    ```json
+    {
+        "id": 3,
+        "platform": "android",
+        "version_code": 101,
+        "version_name": "1.0.1",
+        "update_url": "https://play.google.com/store/apps/details?id=com.example.app",
+        "release_notes": "Bug fixes and performance improvements",
+        "is_force_update": false,
+        "created_at": "2025-12-30T10:00:00.000000Z",
+        "updated_at": "2025-12-30T10:00:00.000000Z"
+    }
+    ```
+
+### Show App Version
+
+-   **Endpoint:** `GET /api/admin/app-versions/{appVersion}`
+-   **Description:** Retrieves a single app version by its ID.
+-   **Authentication:** Bearer Token
+-   **Response:** The app version object:
+    ```json
+    {
+        "id": 1,
+        "platform": "android",
+        "version_code": 100,
+        "version_name": "1.0.0",
+        "update_url": "https://play.google.com/store/apps/details?id=com.example.app",
+        "release_notes": "Initial release with basic features",
+        "is_force_update": false,
+        "created_at": "2025-09-20T12:47:38.000000Z",
+        "updated_at": "2025-09-20T12:47:38.000000Z"
+    }
+    ```
+
+### Update App Version
+
+-   **Endpoint:** `PUT/PATCH /api/admin/app-versions/{appVersion}`
+-   **Description:** Updates an existing app version.
+-   **Authentication:** Bearer Token
+-   **Request Body:** (same as create, but fields are optional)
+    ```json
+    {
+        "platform": "android",
+        "version_code": 102,
+        "version_name": "1.0.2",
+        "update_url": "https://play.google.com/store/apps/details?id=com.example.app",
+        "release_notes": "Security patch update",
+        "is_force_update": true
+    }
+    ```
+-   **Response:** The updated app version object:
+    ```json
+    {
+        "id": 1,
+        "platform": "android",
+        "version_code": 102,
+        "version_name": "1.0.2",
+        "update_url": "https://play.google.com/store/apps/details?id=com.example.app",
+        "release_notes": "Security patch update",
+        "is_force_update": true,
+        "created_at": "2025-09-20T12:47:38.000000Z",
+        "updated_at": "2025-12-30T10:05:00.000000Z"
+    }
+    ```
+
+### Delete App Version
+
+-   **Endpoint:** `DELETE /api/admin/app-versions/{appVersion}`
+-   **Description:** Deletes an app version.
+-   **Authentication:** Bearer Token
+-   **Response:** `204 No Content`
+```

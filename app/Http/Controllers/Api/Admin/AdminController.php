@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
-use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -17,6 +16,7 @@ class AdminController extends Controller
     public function index()
     {
         $admins = Admin::with('roles')->latest()->paginate(10);
+
         return response()->json($admins);
     }
 
@@ -31,7 +31,7 @@ class AdminController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'status' => 'required|in:active,inactive',
             'roles' => 'nullable|array',
-            'roles.*' => 'exists:roles,id'
+            'roles.*' => 'exists:roles,id',
         ]);
 
         $this->authorize('create', Admin::class);
@@ -76,7 +76,7 @@ class AdminController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'status' => 'sometimes|required|in:active,inactive',
             'roles' => 'nullable|array',
-            'roles.*' => 'exists:roles,id'
+            'roles.*' => 'exists:roles,id',
         ]);
 
         $this->authorize('update', $admin);
@@ -114,6 +114,7 @@ class AdminController extends Controller
         $this->authorize('delete', $admin);
 
         $admin->delete();
+
         return response()->json(null, 204);
     }
 }

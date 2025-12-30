@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Mail\SuggestSongApproved;
 use App\Models\Song;
 use App\Models\SuggestSong;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class SuggestSongController extends Controller
@@ -90,20 +90,20 @@ class SuggestSongController extends Controller
         $suggestSong->update($validated);
 
         // Allow single ID or array; normalize and sync if provided
-        if (!is_null($categoryIds)) {
+        if (! is_null($categoryIds)) {
             if (is_numeric($categoryIds)) {
                 $categoryIds = [(int) $categoryIds];
             }
-            if (is_array($categoryIds) && !empty($categoryIds)) {
+            if (is_array($categoryIds) && ! empty($categoryIds)) {
                 $suggestSong->categories()->sync($categoryIds);
             }
         }
 
-        if (!is_null($songLanguageIds)) {
+        if (! is_null($songLanguageIds)) {
             if (is_numeric($songLanguageIds)) {
                 $songLanguageIds = [(int) $songLanguageIds];
             }
-            if (is_array($songLanguageIds) && !empty($songLanguageIds)) {
+            if (is_array($songLanguageIds) && ! empty($songLanguageIds)) {
                 $suggestSong->songLanguages()->sync($songLanguageIds);
             }
         }
@@ -144,12 +144,12 @@ class SuggestSongController extends Controller
 
             // Copy categories and songLanguages from suggestion to created song
             $categoryIds = $suggestSong->categories()->pluck('categories.id')->all();
-            if (!empty($categoryIds)) {
+            if (! empty($categoryIds)) {
                 $song->categories()->sync($categoryIds);
             }
 
             $songLanguageIds = $suggestSong->songLanguages()->pluck('song_languages.id')->all();
-            if (!empty($songLanguageIds)) {
+            if (! empty($songLanguageIds)) {
                 $song->songLanguages()->sync($songLanguageIds);
             }
 
@@ -160,7 +160,7 @@ class SuggestSongController extends Controller
 
         Cache::flush();
 
-        if (!empty($suggestSong->email)) {
+        if (! empty($suggestSong->email)) {
             Mail::to($suggestSong->email)->send(new SuggestSongApproved($suggestSong, $song));
         }
 

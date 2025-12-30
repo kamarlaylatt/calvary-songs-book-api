@@ -11,7 +11,9 @@ class SuggestSong extends Model
     use HasFactory, SoftDeletes;
 
     public const STATUS_CANCELLED = 0;
+
     public const STATUS_PENDING = 1;
+
     public const STATUS_APPROVED = 2;
 
     protected $fillable = [

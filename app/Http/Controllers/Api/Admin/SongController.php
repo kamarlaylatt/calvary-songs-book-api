@@ -15,7 +15,7 @@ class SongController extends Controller
     public function index(Request $request)
     {
         // Create a cache key based on request parameters
-        $cacheKey = 'songs.admin.index.' . http_build_query($request->all());
+        $cacheKey = 'songs.admin.index.'.http_build_query($request->all());
 
         $songs = Cache::remember($cacheKey, 300, function () use ($request) {
             return Song::query()
@@ -52,7 +52,7 @@ class SongController extends Controller
                         $query->orderBy($sortBy, $sortOrder);
                     }
                 })
-                ->when(!($request->has('sort_by') && $request->has('sort_order')), function ($query) {
+                ->when(! ($request->has('sort_by') && $request->has('sort_order')), function ($query) {
                     $query->orderByDesc('created_at')->orderByDesc('id');
                 })
                 ->paginate(15);

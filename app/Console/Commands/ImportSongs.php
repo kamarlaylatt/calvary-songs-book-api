@@ -6,7 +6,6 @@ use App\Models\Song;
 use App\Models\Style;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ImportSongs extends Command
@@ -37,14 +36,14 @@ class ImportSongs extends Command
         // Style::truncate();
         // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $csvFile = fopen(base_path("songs.csv"), "r");
+        $csvFile = fopen(base_path('songs.csv'), 'r');
 
         $firstline = true;
-        while (($data = fgetcsv($csvFile, 2000, ",")) !== FALSE) {
-            if (!$firstline) {
+        while (($data = fgetcsv($csvFile, 2000, ',')) !== false) {
+            if (! $firstline) {
                 $styleId = null;
                 $styleName = trim($data[3]);
-                if (!empty($styleName)) {
+                if (! empty($styleName)) {
                     $style = Style::firstOrCreate(['name' => $styleName]);
                     $styleId = $style->id;
                 }
@@ -52,15 +51,15 @@ class ImportSongs extends Command
                 $code = Song::max('code') + 1;
 
                 Song::create([
-                    "code" => $code,
-                    "title" => $data[0],
-                    "slug" => Str::slug($data[0]) . '-' . $code,
-                    "youtube" => $data[1],
-                    "song_writer" => $data[2],
-                    "style_id" => $styleId,
-                    "key" => $data[4],
-                    "lyrics" => $data[5],
-                    "music_notes" => $data[6],
+                    'code' => $code,
+                    'title' => $data[0],
+                    'slug' => Str::slug($data[0]).'-'.$code,
+                    'youtube' => $data[1],
+                    'song_writer' => $data[2],
+                    'style_id' => $styleId,
+                    'key' => $data[4],
+                    'lyrics' => $data[5],
+                    'music_notes' => $data[6],
                     'createable_id' => 1,
                     'createable_type' => 'App\\Models\\Admin',
                 ]);
