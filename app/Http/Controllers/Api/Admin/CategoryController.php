@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('sort_no', 'asc')->latest()->paginate(10);
+        $categories = Category::orderBy('sort_no', 'asc')->latest()->paginate(100);
 
         return response()->json($categories);
     }
