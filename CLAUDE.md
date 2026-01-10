@@ -3,164 +3,130 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-This is a Laravel-based API project called "calvary-songs-book-api". The project appears to be designed for managing a songs book system with both admin and user functionality.
+This is a Laravel-based REST API for managing a songs book system with dual functionality:
+- **User API**: Public endpoints for song browsing, searching, and user authentication
+- **Admin API**: Protected endpoints for managing songs, categories, styles, and users
+- **Hymns System**: Recently added system for managing hymn books, categories, and hymn details
 
 ## Development Commands
 
 ### Running the Application
-- `composer run dev` - Starts the development server with concurrent processes (server, queue, logs, and vite)
-- `php artisan serve` - Starts the Laravel development server only
+- `composer run dev` - Starts development server with concurrent processes (server, queue, logs, vite)
+- `php artisan serve` - Starts Laravel development server only
 - `npm run dev` - Starts Vite development server for frontend assets
 
 ### Testing
-- `composer test` - Runs the full test suite (clears config first, then runs tests)
+- `composer test` - Runs full test suite (clears config first, then runs tests)
 - `php artisan test` - Runs tests directly via artisan
+- Tests use in-memory SQLite database
+
+### Code Quality
+- `vendor/bin/pint` - Run Laravel Pint to format code (run this before finalizing changes)
+- Do not use `vendor/bin/pint --test` - just run `vendor/bin/pint` to fix formatting issues
 
 ### Building
 - `npm run build` - Builds frontend assets for production using Vite
 
-### Code Quality
-- Uses Laravel Pint for code formatting (available in composer.json)
-- PHPUnit for testing with SQLite in-memory database for tests
-
 ## Architecture
 
 ### Directory Structure
-- `app/Http/Controllers/Api/` - API controllers organized by Admin and User namespaces
-- `app/Models/` - Eloquent models (currently includes User model)
-- `routes/web.php` - Web routes (currently minimal)
-- `database/migrations/` - Database migrations including users, cache, and jobs tables
-- `resources/` - Frontend assets (CSS/JS) and Blade views
-- `tests/` - PHPUnit tests split into Feature and Unit directories
+- `app/Http/Controllers/Api/User/` - User-facing API controllers
+- `app/Http/Controllers/Api/Admin/` - Admin API controllers
+- `app/Models/` - Eloquent models (User, Admin, Song, Category, Style, SongLanguage, AppVersion, SuggestSong, Role, and Hymn models)
+- `routes/api.php` - User API routes
+- `routes/admin.php` - Admin API routes
+- `routes/web.php` - Web routes (minimal)
+- `routes/console.php` - Console routes
+- `bootstrap/app.php` - Application configuration (middleware, routing, providers)
+- `bootstrap/providers.php` - Application service providers
+
+### Authentication Architecture
+**Dual Authentication System:**
+- **User Authentication**: Laravel Sanctum with `auth:api` middleware
+- **Admin Authentication**: Custom guard with `auth:admin` middleware (configured via middleware alias in `bootstrap/app.php`)
+- **Authorization**: Policy-based authorization for all models
+- **Roles**: Admin roles (Superadmin, Admin, Guest) via enum
+
+### Database Models & Relationships
+
+**Core Models:**
+- **User**: Standard user with Sanctum tokens, has morphMany relationship to Songs
+- **Admin**: Extended user with soft deletes, roles, and morphMany relationship to Songs
+- **Role**: Enum-based roles (Superadmin, Admin, Guest)
+- **Song**: Central model with polymorphic ownership (createable), categories, languages, and styles
+- **Category**: Hierarchical categorization with sort ordering, soft deletes
+- **Style/SongLanguage**: Taxonomy models for song classification
+- **AppVersion**: Version control for force app updates
+- **SuggestSong**: Song suggestions from mobile app users
+
+**Hymn System Models (Recent):**
+- **HymnCategory**: Categories for hymns
+- **HymnBook**: Collection of hymns
+- **Hymn**: Individual hymns with composer and category
+- **HymnDetail**: Verses/sections of hymns
+
+**Key Relationships:**
+- Polymorphic: Songs can be created by Users or Admins (`createable` polymorphic relation)
+- Many-to-many: Songs-Categories, Songs-SongLanguages
+- Soft Deletes: Enabled on Admins and Categories
+
+### API Structure Patterns
+
+**Controller Organization:**
+- Separated into `Api\User` and `Api\Admin` namespaces
+- Consistent RESTful patterns with resource controllers
+- Form Request validation classes for validation (not inline)
+- Eager loading to prevent N+1 queries
+
+**Caching Strategy:**
+- Extensive use of Laravel Cache for performance
+- Song listings: 30 minutes
+- Song details: 15 minutes
+- Search filters: 15 minutes
+- Cache keys based on request parameters
+
+**Response Patterns:**
+- Consistent JSON responses with standardized structure
+- API Resources used for transformations
+- Pagination support with configurable limits
 
 ### Key Technologies
-- Laravel 12.0 (PHP 8.2+)
-- Vite for asset compilation
-- TailwindCSS 4.0 for styling
-- SQLite for database (with in-memory testing)
-- PHPUnit for testing
+- **Framework**: Laravel 12.0 (PHP 8.2+)
+- **Authentication**: Laravel Sanctum
+- **Database**: SQLite (configurable for MySQL/PostgreSQL)
+- **Testing**: PHPUnit with in-memory SQLite
+- **Frontend Build**: Vite with Laravel Vite Plugin
+- **CSS**: TailwindCSS 4.0
+- **Code Quality**: Laravel Pint
 
-### Database
-- Uses SQLite by default (`database/database.sqlite`)
-- Migrations include standard Laravel auth tables plus cache and jobs
-- Testing uses in-memory SQLite database
+### Special Features
 
-### Frontend
-- Uses Vite with Laravel plugin
-- TailwindCSS for styling
-- Entry points: `resources/css/app.css` and `resources/js/app.js`
+**Song Suggestions:**
+- Public endpoint for mobile app users
+- Admin approval workflow
+- Polymorphic relationship to categories/languages
 
-===
+**Version Control:**
+- App version management for force updates
+- Version checking endpoint
 
-<laravel-boost-guidelines>
-=== boost rules ===
+**Search Capabilities:**
+- Full-text search on song titles and lyrics
+- Multi-filter support (style, category, language)
+- Search filter caching for performance
 
-## Laravel Boost
-- Laravel Boost is an MCP server that comes with powerful tools designed specifically for this application. Use them.
+## Laravel 12 Specifics
 
-## Artisan
-- Use the `list-artisan-commands` tool when you need to call an Artisan command to double check the available parameters.
+This project uses the new Laravel 11/12 streamlined structure:
+- No middleware files in `app/Http/Middleware/` (registered in `bootstrap/app.php`)
+- No `app\Console\Kernel.php` (use `bootstrap/app.php` or `routes/console.php`)
+- Commands auto-register from `app/Console/Commands/`
+- Casts defined in `casts()` method rather than `$casts` property
+- When modifying columns in migrations, include all previously defined attributes
 
-## URLs
-- Whenever you share a project URL with the user you should use the `get-absolute-url` tool to ensure you're using the correct scheme, domain / IP, and port.
+## Testing Conventions
 
-## Tinker / Debugging
-- You should use the `tinker` tool when you need to execute PHP to debug code or query Eloquent models directly.
-- Use the `database-query` tool when you only need to read from the database.
-
-## Reading Browser Logs With the `browser-logs` Tool
-- You can read browser logs, errors, and exceptions using the `browser-logs` tool from Boost.
-- Only recent browser logs will be useful - ignore old logs.
-
-## Searching Documentation (Critically Important)
-- Boost comes with a powerful `search-docs` tool you should use before any other approaches. This tool automatically passes a list of installed packages and their versions to the remote Boost API, so it returns only version-specific documentation specific for the user's circumstance. You should pass an array of packages to filter on if you know you need docs for particular packages.
-- The 'search-docs' tool is perfect for all Laravel related packages, including Laravel, Inertia, Livewire, Filament, Tailwind, Pest, Nova, Nightwatch, etc.
-- You must use this tool to search for Laravel-ecosystem documentation before falling back to other approaches.
-- Search the documentation before making code changes to ensure we are taking the correct approach.
-- Use multiple, broad, simple, topic based queries to start. For example: `['rate limiting', 'routing rate limiting', 'routing']`.
-
-### Available Search Syntax
-- You can and should pass multiple queries at once. The most relevant results will be returned first.
-
-1. Simple Word Searches with auto-stemming - query=authentication - finds 'authenticate' and 'auth'
-2. Multiple Words (AND Logic) - query=rate limit - finds knowledge containing both "rate" AND "limit"
-3. Quoted Phrases (Exact Position) - query="infinite scroll - Words must be adjacent and in that order
-4. Mixed Queries - query=middleware "rate limit" - "middleware" AND exact phrase "rate limit"
-5. Multiple Queries - queries=["authentication", "middleware"] - ANY of these terms
-
-
-=== laravel/core rules ===
-
-## Do Things the Laravel Way
-
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
-- If you're creating a generic PHP class, use `artisan make:class`.
-- Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
-
-### Database
-- Always use proper Eloquent relationship methods with return type hints. Prefer relationship methods over raw queries or manual joins.
-- Use Eloquent models and relationships before suggesting raw database queries
-- Avoid `DB::`; prefer `Model::query()`. Generate code that leverages Laravel's ORM capabilities rather than bypassing them.
-- Generate code that prevents N+1 query problems by using eager loading.
-- Use Laravel's query builder for very complex database operations.
-
-### Model Creation
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
-
-### APIs & Eloquent Resources
-- For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
-
-### Controllers & Validation
-- Always create Form Request classes for validation rather than inline validation in controllers. Include both validation rules and custom error messages.
-- Check sibling Form Requests to see if the application uses array or string based validation rules.
-
-### Queues
-- Use queued jobs for time-consuming operations with the `ShouldQueue` interface.
-
-### Authentication & Authorization
-- Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
-
-### URL Generation
-- When generating links to other pages, prefer named routes and the `route()` function.
-
-### Configuration
-- Use environment variables only in configuration files - never use the `env()` function directly outside of config files. Always use `config('app.name')`, not `env('APP_NAME')`.
-
-### Testing
-- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
-- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
-
-### Vite Error
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
-
-
-=== laravel/v12 rules ===
-
-## Laravel 12
-
-- Use the `search-docs` tool to get version specific documentation.
-- Since Laravel 11, Laravel has a new streamlined file structure which this project uses.
-
-### Laravel 12 Structure
-- No middleware files in `app/Http/Middleware/`.
-- `bootstrap/app.php` is the file to register middleware, exceptions, and routing files.
-- `bootstrap/providers.php` contains application specific service providers.
-- **No app\Console\Kernel.php** - use `bootstrap/app.php` or `routes/console.php` for console configuration.
-- **Commands auto-register** - files in `app/Console/Commands/` are automatically available and do not require manual registration.
-
-### Database
-- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
-- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
-
-### Models
-- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
-
-
-=== pint/core rules ===
-
-## Laravel Pint Code Formatter
-
-- You must run `vendor/bin/pint` before finalizing changes to ensure your code matches the project's expected style.
-- Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
-</laravel-boost-guidelines>
+- Use factories for creating models in tests
+- Follow existing conventions for `$this->faker` vs `fake()`
+- Most tests should be feature tests (use `php artisan make:test`, not `--unit`)
+- Check for custom states in factories before manually setting up models
