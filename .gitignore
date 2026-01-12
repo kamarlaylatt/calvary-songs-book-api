@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+web-scraper/node_modules
+web-scraper/output/
+web-scraper/*.json
+web-scraper/*.csv
+!web-scraper/package.json
+!web-scraper/package-lock.json
+!web-scraper/index.js
