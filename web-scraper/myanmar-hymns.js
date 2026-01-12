@@ -1,11 +1,67 @@
+/**
+ * Myanmar Hymn Scraper
+ *
+ * A web scraper for extracting hymn data from myanmarhymn.com
+ *
+ * BACKGROUND MODE USAGE:
+ * ======================
+ *
+ * 1. Start scraping in background:
+ *    node myanmar-hymns.js 1 100 --json --background [--fast|--slow]
+ *
+ * 2. Check progress/status:
+ *    node myanmar-hymns.js --status
+ *
+ * 3. View status file directly:
+ *    cat web-scraper/output/.scrape-status.json
+ *
+ * BACKGROUND MODE DETAILS:
+ * - Runs in background using nohup
+ * - Outputs to web-scraper/output/scrape.log
+ * - Progress tracked in web-scraper/output/.scrape-status.json
+ * - Real-time percentage monitoring available
+ * - PID stored for process management
+ *
+ * STATUS FILE FORMAT:
+ * {
+ *   "pid": 12345,
+ *   "startId": 1,
+ *   "endId": 100,
+ *   "current": 45,
+ *   "total": 100,
+ *   "percentage": 45,
+ *   "status": "running" | "completed" | "failed",
+ *   "startTime": "2025-01-12T10:00:00.000Z",
+ *   "outputFile": "myanmar-hymns-1-100-2025-01-12T10-00-00.json"
+ * }
+ *
+ * EXAMPLES:
+ * =========
+ * # Start background scraping (hymns 1-100)
+ * node myanmar-hymns.js 1 100 --json --background
+ *
+ * # Check progress (shows percentage and current status)
+ * node myanmar-hymns.js --status
+ *
+ * # Start with fast mode in background
+ * node myanmar-hymns.js 1 50 --json --background --fast
+ *
+ * # Stop background job (find PID from status, then kill)
+ * kill $(cat web-scraper/output/.scrape-pid.txt)
+ */
+
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 
 const BASE_URL = 'https://www.myanmarhymn.com/hymn.php?id=';
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const FILES_DIR = path.join(OUTPUT_DIR, 'files');
+const STATUS_FILE = path.join(OUTPUT_DIR, '.scrape-status.json');
+const PID_FILE = path.join(OUTPUT_DIR, '.scrape-pid.txt');
+const LOG_FILE = path.join(OUTPUT_DIR, 'scrape.log');
 
 // Ensure output directories exist
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -142,8 +198,28 @@ async function scrapeHymn(id) {
     let currentVerse = [];
     let foundFirstVerse = false;
     let verseNumber = null;
+    let verseType = 'verse'; // 'verse' or 'chorus'
 
     for (const line of lines) {
+      // Check for chorus marker "ထပ်ဆို"
+      if (line === 'ထပ်ဆို' || line.trim() === 'ထပ်ဆို') {
+        // Save previous verse if exists
+        if (currentVerse.length > 0 && foundFirstVerse) {
+          lyrics.push({
+            verse_number: verseNumber,
+            verse_type: verseType,
+            content: currentVerse.join('\n')
+          });
+        }
+
+        // Start new chorus
+        verseNumber = null;
+        verseType = 'chorus';
+        currentVerse = [];
+        foundFirstVerse = true;
+        continue;
+      }
+
       // Check if line starts with a Myanmar verse number (၁။, ၂။, ၃။, etc.)
       const verseMatch = line.match(/^([၁၂၃၄၅၆၇၈၉၀])\s*။/);
 
@@ -152,12 +228,14 @@ async function scrapeHymn(id) {
         if (currentVerse.length > 0 && foundFirstVerse) {
           lyrics.push({
             verse_number: verseNumber,
+            verse_type: verseType,
             content: currentVerse.join('\n')
           });
         }
 
         // Start new verse
         verseNumber = myanmarDigitToArabic(verseMatch[1]);
+        verseType = 'verse';
         currentVerse = [line.replace(/^[၁၂၃၄၅၆၇၈၉၀]\s*။\s*/, '')];
         foundFirstVerse = true;
       } else if (foundFirstVerse) {
@@ -167,10 +245,12 @@ async function scrapeHymn(id) {
           // Save previous verse first
           lyrics.push({
             verse_number: verseNumber,
+            verse_type: verseType,
             content: currentVerse.join('\n')
           });
 
           verseNumber = parseInt(specialVerseMatch[1]);
+          verseType = 'verse';
           currentVerse = [specialVerseMatch[3]];
         } else if (!line.includes('Acknowledgement') &&
                    !line.includes('Title') &&
@@ -188,6 +268,7 @@ async function scrapeHymn(id) {
     if (currentVerse.length > 0 && foundFirstVerse) {
       lyrics.push({
         verse_number: verseNumber,
+        verse_type: verseType,
         content: currentVerse.join('\n')
       });
     }
@@ -313,13 +394,43 @@ function myanmarDigitToArabic(myanmarDigit) {
 }
 
 /**
- * Scrape multiple hymns within a range
+ * Update status file for background mode monitoring
+ * @param {Object} status - Status object to write
+ */
+function updateStatus(status) {
+  try {
+    fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2));
+  } catch (error) {
+    // Ignore errors when writing status
+  }
+}
+
+/**
+ * Scrape multiple hymns within a range (core scraping logic, no file output)
  * @param {number} startId - Starting hymn ID
  * @param {number} endId - Ending hymn ID
  * @param {number} delay - Delay between requests in ms (default: 2000)
- * @returns {Array} - Array of hymn objects
+ * @param {boolean} trackStatus - Whether to track progress in status file
+ * @returns {Object} - Object containing results array and skipped array
  */
-async function scrapeMultipleHymns(startId, endId, delay = 2000) {
+async function scrapeHymnsRange(startId, endId, delay = 2000, trackStatus = false) {
+  const total = endId - startId + 1;
+
+  // Initialize status if tracking
+  if (trackStatus) {
+    updateStatus({
+      pid: process.pid,
+      startId,
+      endId,
+      current: startId - 1,
+      total,
+      percentage: 0,
+      status: 'running',
+      startTime: new Date().toISOString(),
+      outputFile: null
+    });
+  }
+
   console.log(`\n🚀 Starting scrape from hymn ${startId} to ${endId}`);
   console.log(`⏱️  Delay: ${delay}ms between requests\n`);
 
@@ -335,13 +446,62 @@ async function scrapeMultipleHymns(startId, endId, delay = 2000) {
       skipped.push(id);
     }
 
+    // Update status if tracking
+    if (trackStatus) {
+      const percentage = Math.round(((id - startId + 1) / total) * 100);
+      updateStatus({
+        pid: process.pid,
+        startId,
+        endId,
+        current: id,
+        total,
+        percentage,
+        status: 'running',
+        startTime: new Date().toISOString(),
+        outputFile: null
+      });
+    }
+
     // Rate limiting - delay between requests
     if (id < endId) {
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
-  // Save results to JSON file
+  return { results, skipped };
+}
+
+/**
+ * Print summary of scraping results
+ * @param {Object} data - Object containing results and skipped arrays
+ * @param {string} outputPath - Optional path to output file
+ */
+function printSummary(data, outputPath = null) {
+  const { results, skipped } = data;
+
+  console.log('\n' + '='.repeat(50));
+  console.log('📊 SCRAPING SUMMARY');
+  console.log('='.repeat(50));
+  console.log(`✅ Successfully scraped: ${results.length} hymns`);
+  console.log(`⚠️  Skipped/Not found: ${skipped.length} hymns`);
+  if (skipped.length > 0) {
+    console.log(`   Skipped IDs: ${skipped.join(', ')}`);
+  }
+  if (outputPath) {
+    console.log(`💾 Saved to: output/${path.basename(outputPath)}`);
+  }
+  console.log('='.repeat(50) + '\n');
+}
+
+/**
+ * Save results to JSON file
+ * @param {Object} data - Object containing results and skipped arrays
+ * @param {number} startId - Starting hymn ID
+ * @param {number} endId - Ending hymn ID
+ * @returns {string} - Path to saved file
+ */
+async function saveToJSON(data, startId, endId) {
+  const { results, skipped } = data;
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
   const filename = `myanmar-hymns-${startId}-${endId}-${timestamp}.json`;
   const outputPath = path.join(OUTPUT_DIR, filename);
@@ -356,19 +516,21 @@ async function scrapeMultipleHymns(startId, endId, delay = 2000) {
     hymns: results
   }, null, 2));
 
-  // Print summary
-  console.log('\n' + '='.repeat(50));
-  console.log('📊 SCRAPING SUMMARY');
-  console.log('='.repeat(50));
-  console.log(`✅ Successfully scraped: ${results.length} hymns`);
-  console.log(`⚠️  Skipped/Not found: ${skipped.length} hymns`);
-  if (skipped.length > 0) {
-    console.log(`   Skipped IDs: ${skipped.join(', ')}`);
-  }
-  console.log(`💾 Saved to: output/${filename}`);
-  console.log('='.repeat(50) + '\n');
+  return outputPath;
+}
 
-  return results;
+/**
+ * Scrape multiple hymns and save to JSON (legacy function for backward compatibility)
+ * @param {number} startId - Starting hymn ID
+ * @param {number} endId - Ending hymn ID
+ * @param {number} delay - Delay between requests in ms (default: 2000)
+ * @returns {Array} - Array of hymn objects
+ */
+async function scrapeMultipleHymns(startId, endId, delay = 2000) {
+  const data = await scrapeHymnsRange(startId, endId, delay);
+  const outputPath = await saveToJSON(data, startId, endId);
+  printSummary(data, outputPath);
+  return data.results;
 }
 
 /**
@@ -398,6 +560,7 @@ async function scrapeForLaravel(startId, endId) {
       updated_at: new Date().toISOString(),
       details: hymn.lyrics.map(verse => ({
         verse_number: verse.verse_number,
+        verse_type: verse.verse_type || 'verse',
         content_mm: verse.content,
         sort_order: verse.verse_number,
         created_at: new Date().toISOString(),
@@ -414,13 +577,17 @@ async function scrapeForLaravel(startId, endId) {
 }
 
 /**
- * Create CSV export for easy viewing
+ * Save results to CSV file
+ * @param {Object} data - Object containing results and skipped arrays
+ * @param {number} startId - Starting hymn ID
+ * @param {number} endId - Ending hymn ID
+ * @returns {string} - Path to saved file
  */
-async function scrapeToCSV(startId, endId) {
-  const hymns = await scrapeMultipleHymns(startId, endId);
+function saveToCSV(data, startId, endId) {
+  const hymns = data.results;
 
   // Create CSV header
-  let csv = 'Hymn Number,Title (Myanmar),Title (English),Composer,Category,Scriptures,PDF,PPTX,Verse Count\n';
+  let csv = 'Hymn Number,Title (Myanmar),Title (English),Composer,Category,Scriptures,PDF,PPTX,Verse Count,Lyrics\n';
 
   // Add each hymn as a row
   hymns.forEach(hymn => {
@@ -429,6 +596,16 @@ async function scrapeToCSV(startId, endId) {
       if (!text) return '';
       return '"' + text.replace(/"/g, '""') + '"';
     };
+
+    // Combine all verses into a single text block
+    const lyricsText = hymn.lyrics
+      .map(verse => {
+        if (verse.verse_type === 'chorus') {
+          return `[Chorus]\n${verse.content}`;
+        }
+        return `[Verse ${verse.verse_number}]\n${verse.content}`;
+      })
+      .join('\n\n');
 
     csv += [
       hymn.hymn_number,
@@ -439,20 +616,174 @@ async function scrapeToCSV(startId, endId) {
       escapeCsv(hymn.scriptures),
       escapeCsv(hymn.files?.pdf || ''),
       escapeCsv(hymn.files?.pptx || ''),
-      hymn.lyrics.length
+      hymn.lyrics.length,
+      escapeCsv(lyricsText)
     ].join(',') + '\n';
   });
 
   const csvPath = path.join(OUTPUT_DIR, `myanmar-hymns-${startId}-${endId}.csv`);
   fs.writeFileSync(csvPath, csv, 'utf8');
-  console.log(`💾 CSV export saved to: output/${path.basename(csvPath)}`);
+  return csvPath;
+}
 
-  return hymns;
+/**
+ * Create CSV export for easy viewing (legacy function for backward compatibility)
+ */
+async function scrapeToCSV(startId, endId) {
+  const data = await scrapeHymnsRange(startId, endId);
+  const csvPath = saveToCSV(data, startId, endId);
+  printSummary(data, csvPath);
+  return data.results;
+}
+
+/**
+ * Display status of background scraping job
+ */
+function showStatus() {
+  if (!fs.existsSync(STATUS_FILE)) {
+    console.log('\n❌ No background scrape job found.');
+    console.log('Start a background job with: node myanmar-hymns.js <start> <end> --json --background\n');
+    process.exit(0);
+  }
+
+  try {
+    const status = JSON.parse(fs.readFileSync(STATUS_FILE, 'utf8'));
+    const startTime = new Date(status.startTime);
+    const now = new Date();
+    const elapsed = Math.floor((now - startTime) / 1000);
+    const elapsedMin = Math.floor(elapsed / 60);
+    const elapsedSec = elapsed % 60;
+
+    console.log('\n' + '='.repeat(50));
+    console.log('📊 BACKGROUND SCRAPE STATUS');
+    console.log('='.repeat(50));
+    console.log(`Status:        ${status.status.toUpperCase()}`);
+    console.log(`Range:         Hymn ${status.startId} - ${status.endId}`);
+    console.log(`Progress:      ${status.current} / ${status.total} (${status.percentage}%)`);
+
+    if (status.status === 'running') {
+      console.log(`Elapsed Time:  ${elapsedMin}m ${elapsedSec}s`);
+
+      // Estimate remaining time
+      if (status.percentage > 0) {
+        const avgTimePerHymn = elapsed / status.current;
+        const remaining = (status.total - status.current) * avgTimePerHymn;
+        const remainingMin = Math.floor(remaining / 60);
+        const remainingSec = Math.floor(remaining % 60);
+        console.log(`ETA:          ~${remainingMin}m ${remainingSec}s`);
+      }
+    }
+
+    if (status.outputFile) {
+      console.log(`Output File:   ${status.outputFile}`);
+    }
+
+    console.log(`PID:           ${status.pid}`);
+    console.log(`Started:       ${startTime.toLocaleString()}`);
+    console.log('='.repeat(50) + '\n');
+
+    // Check if process is still running
+    try {
+      process.kill(status.pid, 0); // Signal 0 just checks if process exists
+      console.log('✅ Process is running\n');
+    } catch (e) {
+      if (status.status === 'running') {
+        console.log('⚠️  Process appears to have stopped unexpectedly\n');
+      } else {
+        console.log('✅ Process completed\n');
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error reading status file:', error.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Start scraping in background mode
+ */
+function startBackground(startId, endId, delay, format = 'json') {
+  const args = [
+    __filename,
+    String(startId),
+    String(endId),
+    `--${format}`,
+    '--background-worker',
+    `--delay=${delay}`
+  ];
+
+  // Open log file for appending
+  const logFd = fs.openSync(LOG_FILE, 'a');
+
+  const child = spawn('node', args, {
+    detached: true,
+    stdio: ['ignore', logFd, logFd]
+  });
+
+  // Save PID
+  fs.writeFileSync(PID_FILE, String(child.pid));
+
+  child.unref();
+  console.log(`\n✅ Background scrape started!`);
+  console.log(`   PID: ${child.pid}`);
+  console.log(`   Range: Hymn ${startId} - ${endId}`);
+  console.log(`   Format: ${format.toUpperCase()}`);
+  console.log(`   Delay: ${delay}ms`);
+  console.log(`\n📝 Monitor progress with:`);
+  console.log(`   node myanmar-hymns.js --status`);
+  console.log(`\n📄 View logs with:`);
+  console.log(`   tail -f web-scraper/output/scrape.log\n`);
+}
+
+/**
+ * Background worker process (actual scraping in background)
+ */
+async function backgroundWorker(startId, endId, delay, format = 'json') {
+  const data = await scrapeHymnsRange(startId, endId, delay, true);
+  let outputPath;
+
+  if (format === 'csv') {
+    outputPath = saveToCSV(data, startId, endId);
+  } else {
+    outputPath = await saveToJSON(data, startId, endId);
+  }
+
+  // Update status with completed info
+  updateStatus({
+    pid: process.pid,
+    startId,
+    endId,
+    current: endId,
+    total: endId - startId + 1,
+    percentage: 100,
+    status: 'completed',
+    startTime: new Date().toISOString(),
+    outputFile: path.basename(outputPath)
+  });
+
+  printSummary(data, outputPath);
 }
 
 // CLI interface
 async function main() {
   const args = process.argv.slice(2);
+
+  // Handle --status flag (doesn't require start/end IDs)
+  if (args.includes('--status')) {
+    showStatus();
+    process.exit(0);
+  }
+
+  // Handle --background-worker flag (internal use)
+  if (args.includes('--background-worker')) {
+    const startId = parseInt(args[0]);
+    const endId = parseInt(args[1]);
+    const delayArg = args.find(arg => arg.startsWith('--delay='));
+    const delay = delayArg ? parseInt(delayArg.split('=')[1]) : 2000;
+    const format = args.includes('--csv') ? 'csv' : 'json';
+    await backgroundWorker(startId, endId, delay, format);
+    process.exit(0);
+  }
 
   if (args.length === 0) {
     console.log(`
@@ -460,20 +791,28 @@ async function main() {
 =======================
 
 Usage:
-  node index.js <start_id> <end_id> [options]
+  node myanmar-hymns.js <start_id> <end_id> [options]
 
 Examples:
-  node index.js 12 12              # Scrape single hymn (ID 12)
-  node index.js 1 50               # Scrape hymns 1-50
-  node index.js 1 100 --laravel    # Scrape and output Laravel format
-  node index.js 1 50 --csv         # Scrape and export to CSV
-  node index.js 1 10 --fast        # Scrape with 500ms delay (default: 2000ms)
+  node myanmar-hymns.js 12 12              # Scrape single hymn (ID 12) - outputs JSON
+  node myanmar-hymns.js 1 50               # Scrape hymns 1-50 - outputs JSON
+  node myanmar-hymns.js 1 50 --csv         # Scrape and export to CSV only
+  node myanmar-hymns.js 1 50 --json        # Scrape and export to JSON only
+  node myanmar-hymns.js 1 100 --laravel    # Scrape and output Laravel format
+  node myanmar-hymns.js 1 10 --fast        # Scrape with 500ms delay (default: 2000ms)
+
+  # Background mode
+  node myanmar-hymns.js 1 100 --json --background    # Run in background
+  node myanmar-hymns.js --status                      # Check background job status
 
 Options:
+  --json       Export to JSON format (default)
+  --csv        Export to CSV format (no JSON file created)
   --laravel    Output in Laravel-ready format
-  --csv        Export to CSV for easy viewing
   --fast       Use 500ms delay instead of 2000ms
   --slow       Use 5000ms delay
+  --background Run in background mode (with --json or --csv)
+  --status     Show status of background job
 
 Data Fields Extracted:
   • Hymn Number
@@ -482,7 +821,7 @@ Data Fields Extracted:
   • Composer
   • Category
   • Scriptures
-  • Lyrics (with verse numbers)
+  • Lyrics (with verse/chorus markers)
   • PDF & PPTX files (downloaded to output/files/)
 
 Output:
@@ -491,7 +830,7 @@ Output:
   • Laravel: output/laravel-hymns-{range}.json
   • Files: output/files/hymn-{id}.pdf & .pptx
 
-Example: node index.js 12 12 --csv
+Example: node myanmar-hymns.js 12 12 --csv
 `);
     process.exit(0);
   }
@@ -500,8 +839,10 @@ Example: node index.js 12 12 --csv
   const endId = parseInt(args[1]);
   const isLaravel = args.includes('--laravel');
   const isCSV = args.includes('--csv');
+  const isJSON = args.includes('--json');
   const isFast = args.includes('--fast');
   const isSlow = args.includes('--slow');
+  const isBackground = args.includes('--background');
 
   const delay = isFast ? 500 : (isSlow ? 5000 : 2000);
 
@@ -515,12 +856,32 @@ Example: node index.js 12 12 --csv
     process.exit(1);
   }
 
+  // Handle background mode
+  if (isBackground) {
+    if (isLaravel) {
+      console.error('❌ Error: --background is not compatible with --laravel');
+      process.exit(1);
+    }
+    const format = isCSV ? 'csv' : 'json';
+    startBackground(startId, endId, delay, format);
+    process.exit(0);
+  }
+
   try {
     if (isLaravel) {
       await scrapeForLaravel(startId, endId);
     } else if (isCSV) {
-      await scrapeToCSV(startId, endId);
+      // CSV only - no JSON file
+      const data = await scrapeHymnsRange(startId, endId, delay);
+      const csvPath = saveToCSV(data, startId, endId);
+      printSummary(data, csvPath);
+    } else if (isJSON) {
+      // JSON only
+      const data = await scrapeHymnsRange(startId, endId, delay);
+      const jsonPath = await saveToJSON(data, startId, endId);
+      printSummary(data, jsonPath);
     } else {
+      // Default: JSON output
       await scrapeMultipleHymns(startId, endId, delay);
     }
     console.log('✅ Scraping complete!\n');
