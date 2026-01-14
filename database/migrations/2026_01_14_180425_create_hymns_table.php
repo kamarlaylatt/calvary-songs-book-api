@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('no');
             $table->foreignId('hymn_category_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('song_id')->constrained()->onDelete('cascade');
+            $table->integer('reference_id');
             $table->timestamps();
         });
     }

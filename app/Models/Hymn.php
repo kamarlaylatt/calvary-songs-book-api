@@ -15,6 +15,7 @@ class Hymn extends Model
         'no',
         'hymn_category_id',
         'song_id',
+        'reference_id',
     ];
 
     /**
@@ -24,6 +25,7 @@ class Hymn extends Model
     {
         return [
             'no' => 'integer',
+            'reference_id' => 'integer',
         ];
     }
 

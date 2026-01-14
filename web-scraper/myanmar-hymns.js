@@ -128,8 +128,15 @@ async function scrapeHymn(id) {
     // Extract full page content
     const fullText = $('body').text();
 
-    // Extract hymn number from URL
-    const hymnNumber = id;
+    // Extract actual hymn number from the page (not the URL ID)
+    let hymnNumber = id; // fallback to URL ID
+    const hymnNumberElement = $('strong.text-primary:contains("Hymn Number:")').next();
+    if (hymnNumberElement.length > 0) {
+      const extractedNumber = parseInt(hymnNumberElement.text().trim());
+      if (!isNaN(extractedNumber)) {
+        hymnNumber = extractedNumber;
+      }
+    }
 
     // Extract title (Myanmar) - from <title> tag
     const titleMM = $('title').text().trim().replace(' - Myanmar Hymn', '') || '';
@@ -349,6 +356,7 @@ async function scrapeHymn(id) {
     }
 
     const hymn = {
+      reference_id: id,
       hymn_number: hymnNumber,
       title_mm: titleMM,
       title_en: titleEN,
@@ -548,6 +556,7 @@ async function scrapeForLaravel(startId, endId) {
     category: '',
     scriptures: '',
     hymns: hymns.map(hymn => ({
+      reference_id: hymn.reference_id,
       hymn_number: hymn.hymn_number,
       title_mm: hymn.title_mm,
       title_en: hymn.title_en,
@@ -587,7 +596,7 @@ function saveToCSV(data, startId, endId) {
   const hymns = data.results;
 
   // Create CSV header
-  let csv = 'Hymn Number,Title (Myanmar),Title (English),Composer,Category,Scriptures,PDF,PPTX,Verse Count,Lyrics\n';
+  let csv = 'Reference ID,Hymn Number,Title (Myanmar),Title (English),Composer,Category,Scriptures,PDF,PPTX,Verse Count,Lyrics\n';
 
   // Add each hymn as a row
   hymns.forEach(hymn => {
@@ -608,6 +617,7 @@ function saveToCSV(data, startId, endId) {
       .join('\n\n');
 
     csv += [
+      hymn.reference_id,
       hymn.hymn_number,
       escapeCsv(hymn.title_mm),
       escapeCsv(hymn.title_en),
