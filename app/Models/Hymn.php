@@ -16,6 +16,7 @@ class Hymn extends Model
         'hymn_category_id',
         'song_id',
         'reference_id',
+        'english_title',
     ];
 
     /**
