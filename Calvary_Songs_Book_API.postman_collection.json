@@ -1,16 +1,13 @@
 {
-						"url": {
-							"raw": "{{base_url}}/api/admin/suggest-songs?status=1&category_id=1&song_language_id=1",
-		"name": "Calvary Songs Book API",
-		"description": "API collection for Calvary Songs Book mobile application",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
+	"name": "Calvary Songs Book API",
+	"description": "API collection for Calvary Songs Book mobile application",
+	"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 	"item": [
 		{
 			"name": "Authentication",
 			"item": [
 				{
-						"description": "List suggested songs with optional filters, including category_id"
+					"name": "Login",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -474,6 +471,400 @@
 							]
 						},
 						"description": "Cancel a suggested song"
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Hymn Categories",
+			"item": [
+				{
+					"name": "List Hymn Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymn-categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymn-categories"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by category name",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "",
+									"description": "Field to sort by (name, created_at, id)",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "",
+									"description": "Sort direction (asc or desc)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Retrieves a paginated list of hymn categories"
+					}
+				},
+				{
+					"name": "Create Hymn Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Worship\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymn-categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymn-categories"
+							]
+						},
+						"description": "Creates a new hymn category"
+					}
+				},
+				{
+					"name": "Show Hymn Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymn-categories/:hymnCategory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymn-categories",
+								":hymnCategory"
+							],
+							"variable": [
+								{
+									"key": "hymnCategory",
+									"value": "1",
+									"description": "Hymn Category ID"
+								}
+							]
+						},
+						"description": "Retrieves a single hymn category by ID with associated hymns"
+					}
+				},
+				{
+					"name": "Update Hymn Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Worship and Adoration\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymn-categories/:hymnCategory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymn-categories",
+								":hymnCategory"
+							],
+							"variable": [
+								{
+									"key": "hymnCategory",
+									"value": "1",
+									"description": "Hymn Category ID"
+								}
+							]
+						},
+						"description": "Updates an existing hymn category"
+					}
+				},
+				{
+					"name": "Delete Hymn Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymn-categories/:hymnCategory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymn-categories",
+								":hymnCategory"
+							],
+							"variable": [
+								{
+									"key": "hymnCategory",
+									"value": "1",
+									"description": "Hymn Category ID"
+								}
+							]
+						},
+						"description": "Deletes a hymn category"
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Hymns",
+			"item": [
+				{
+					"name": "List Hymns",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymns"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Filter by hymn ID",
+									"disabled": true
+								},
+								{
+									"key": "no",
+									"value": "",
+									"description": "Filter by hymn number",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in English title",
+									"disabled": true
+								},
+								{
+									"key": "hymn_category_id",
+									"value": "",
+									"description": "Filter by hymn category ID",
+									"disabled": true
+								},
+								{
+									"key": "song_id",
+									"value": "",
+									"description": "Filter by associated song ID",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "",
+									"description": "Field to sort by (no, created_at, id, reference_id)",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "",
+									"description": "Sort direction (asc or desc)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Retrieves a paginated list of hymns"
+					}
+				},
+				{
+					"name": "Create Hymn",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"no\": 1,\n  \"hymn_category_id\": 1,\n  \"song_id\": 10,\n  \"reference_id\": 100,\n  \"english_title\": \"Amazing Grace\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymns"
+							]
+						},
+						"description": "Creates a new hymn. Required: no, hymn_category_id. Optional: song_id, reference_id, english_title"
+					}
+				},
+				{
+					"name": "Show Hymn",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymns/:hymn",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymns",
+								":hymn"
+							],
+							"variable": [
+								{
+									"key": "hymn",
+									"value": "1",
+									"description": "Hymn ID"
+								}
+							]
+						},
+						"description": "Retrieves a single hymn by its ID"
+					}
+				},
+				{
+					"name": "Update Hymn",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"no\": 2,\n  \"english_title\": \"Amazing Grace - Updated\",\n  \"reference_id\": 101\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymns/:hymn",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymns",
+								":hymn"
+							],
+							"variable": [
+								{
+									"key": "hymn",
+									"value": "1",
+									"description": "Hymn ID"
+								}
+							]
+						},
+						"description": "Updates an existing hymn"
+					}
+				},
+				{
+					"name": "Delete Hymn",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/hymns/:hymn",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"hymns",
+								":hymn"
+							],
+							"variable": [
+								{
+									"key": "hymn",
+									"value": "1",
+									"description": "Hymn ID"
+								}
+							]
+						},
+						"description": "Deletes a hymn"
 					}
 				}
 			]
