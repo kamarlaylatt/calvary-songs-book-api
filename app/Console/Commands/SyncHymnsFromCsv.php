@@ -196,11 +196,17 @@ class SyncHymnsFromCsv extends Command
     }
 
     /**
-     * Parse CSV field (remove quotes, trim)
+     * Parse CSV field (remove surrounding quotes and trim whitespace)
      */
     private function parseCsvField(string $field): string
     {
-        return trim($field, " \t\n\r\0\x0B\"");
+        // Remove surrounding quotes if present
+        $field = trim($field);
+        if (str_starts_with($field, '"') && str_ends_with($field, '"')) {
+            $field = substr($field, 1, -1);
+        }
+
+        return $field;
     }
 
     /**
