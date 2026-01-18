@@ -111,7 +111,7 @@ class SyncHymnsFromCsv extends Command
 
                 // Create or get song
                 $song = $this->createOrUpdateSong(
-                    $hymnNumber,
+                    Song::nextCode(),
                     $titleMm,
                     $composer,
                     $lyrics,
@@ -136,7 +136,6 @@ class SyncHymnsFromCsv extends Command
                     $song->id,
                     $stats
                 );
-
             } catch (\Exception $e) {
                 $this->newLine();
                 $this->warn("Row {$index}: Error - {$e->getMessage()}");
@@ -181,7 +180,7 @@ class SyncHymnsFromCsv extends Command
         }
 
         // Clean headers (remove BOM if present)
-        $headers = array_map(fn ($h) => preg_replace('/^\xEF\xBB\xBF/', '', $h), $headers);
+        $headers = array_map(fn($h) => preg_replace('/^\xEF\xBB\xBF/', '', $h), $headers);
 
         $data = [];
         while (($row = fgetcsv($handle, 0, ',')) !== false) {
@@ -223,7 +222,7 @@ class SyncHymnsFromCsv extends Command
         array &$stats
     ): Song {
         // Generate slug from title
-        $slug = Str::slug($title).'-'.$code;
+        $slug = Str::slug($title) . '-' . $code;
 
         // Check if song exists by code and title
         $song = Song::where('code', $code)->first();
