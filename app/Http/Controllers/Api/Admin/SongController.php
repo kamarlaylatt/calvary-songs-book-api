@@ -15,7 +15,7 @@ class SongController extends Controller
     public function index(Request $request)
     {
         // Create a cache key based on request parameters
-        // $cacheKey = 'songs.admin.index.'.http_build_query($request->all());
+        $cacheKey = "songs.admin.index." . http_build_query($request->all());
 
         $songs = Cache::remember($cacheKey, 300, function () use ($request) {
             return Song::query()
