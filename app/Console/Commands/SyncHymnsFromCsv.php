@@ -180,7 +180,7 @@ class SyncHymnsFromCsv extends Command
         }
 
         // Clean headers (remove BOM if present)
-        $headers = array_map(fn ($h) => preg_replace('/^\xEF\xBB\xBF/', '', $h), $headers);
+        $headers = array_map(fn($h) => preg_replace('/^\xEF\xBB\xBF/', '', $h), $headers);
 
         $data = [];
         while (($row = fgetcsv($handle, 0, ',')) !== false) {
@@ -222,7 +222,7 @@ class SyncHymnsFromCsv extends Command
         array &$stats
     ): Song {
         // Generate slug from title
-        $slug = Str::slug($title).'-'.$code;
+        $slug = Str::slug($title) . '-' . $code;
 
         // Check if song exists by code and title
         $song = Song::where('code', $code)->first();
@@ -239,7 +239,7 @@ class SyncHymnsFromCsv extends Command
                 'song_writer' => $songWriter,
                 'lyrics' => $lyrics,
                 'style_id' => $styleId,
-                'popular_rating' => 3,
+                'popular_rating' => 2,
                 'createable_type' => Admin::class,
                 'createable_id' => $admin->id,
             ]);
