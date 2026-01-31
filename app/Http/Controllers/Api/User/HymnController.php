@@ -27,7 +27,8 @@ class HymnController extends Controller
                     } else {
                         $q->where('english_title', 'like', "%{$search}%")
                             ->orWhereHas('song', function ($songQuery) use ($search) {
-                                $songQuery->where('title', 'like', "%{$search}%");
+                                $songQuery->where('title', 'like', "%{$search}%")
+                                    ->orWhere('lyrics', 'like', "%{$search}%");
                             });
                     }
                 })
