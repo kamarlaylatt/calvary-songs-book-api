@@ -195,6 +195,111 @@
 			]
 		},
 		{
+			"name": "Hymns (Myanmar)",
+			"item": [
+				{
+					"name": "List Hymns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/hymns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"hymns"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by hymn number (numeric) or English title",
+									"disabled": true
+								},
+								{
+									"key": "hymn_category_id",
+									"value": "",
+									"description": "Filter by hymn category ID",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "",
+									"description": "Items per page (default: 20)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Retrieves a paginated list of Myanmar hymns with related songs. Supports search by hymn number or title, and filter by category."
+					}
+				},
+				{
+					"name": "Get Hymn by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/hymns/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"hymns",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Hymn ID"
+								}
+							]
+						},
+						"description": "Retrieves a single hymn by its ID with full song details including lyrics, youtube, description, and song writer"
+					}
+				},
+				{
+					"name": "List Hymn Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/hymn-categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"hymn-categories"
+							]
+						},
+						"description": "Retrieves a list of all hymn categories for filtering"
+					}
+				},
+				{
+					"name": "Get Hymn Filters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/hymn-filters",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"hymn-filters"
+							]
+						},
+						"description": "Retrieves available filters for hymns (hymn categories)"
+					}
+				}
+			]
+		},
+		{
 			"name": "Search Filters",
 			"item": [
 				{

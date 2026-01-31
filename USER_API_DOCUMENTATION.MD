@@ -297,6 +297,147 @@ Note: When multiple filters are provided, they are combined with AND.
     }
     ```
 
+## Hymns (Myanmar)
+
+### List Hymns
+
+-   **Endpoint:** `GET /api/hymns`
+-   **Description:** Retrieves a paginated list of Myanmar hymns with related songs. Supports search and filtering.
+-   **Query Parameters:**
+    -   `search` (optional): Search by hymn number (if numeric) or English title (if text)
+    -   `hymn_category_id` (optional): Filter by hymn category ID
+    -   `limit` (optional): Number of items per page (default: 20)
+-   **Response:** A paginated JSON response with hymns and their related songs:
+    ```json
+    {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 1,
+                "no": 1,
+                "english_title": "Amazing Grace",
+                "reference_id": 100,
+                "hymn_category_id": 1,
+                "song_id": 10,
+                "created_at": "2026-01-15T10:00:00.000000Z",
+                "updated_at": "2026-01-15T10:00:00.000000Z",
+                "song": {
+                    "id": 10,
+                    "code": 10,
+                    "title": "Amazing Grace",
+                    "slug": "amazing-grace-10",
+                    "youtube": "https://www.youtube.com/watch?v=...",
+                    "lyrics": "Amazing grace how sweet the sound\nThat saved a wretch like me",
+                    "description": "A description of the song.",
+                    "song_writer": "John Newton"
+                },
+                "hymn_category": {
+                    "id": 1,
+                    "name": "Worship"
+                }
+            }
+        ],
+        "first_page_url": "http://localhost/api/hymns?page=1",
+        "from": 1,
+        "last_page": 5,
+        "last_page_url": "http://localhost/api/hymns?page=5",
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/hymns?page=1",
+                "label": "1",
+                "active": true
+            }
+        ],
+        "next_page_url": "http://localhost/api/hymns?page=2",
+        "path": "http://localhost/api/hymns",
+        "per_page": 20,
+        "prev_page_url": null,
+        "to": 20,
+        "total": 100
+    }
+    ```
+
+#### Examples
+
+-   Get all hymns: `GET /api/hymns`
+-   Search by hymn number: `GET /api/hymns?search=1`
+-   Search by title: `GET /api/hymns?search=grace`
+-   Filter by category: `GET /api/hymns?hymn_category_id=2`
+-   With pagination: `GET /api/hymns?limit=15`
+
+### Get Hymn by ID
+
+-   **Endpoint:** `GET /api/hymns/{id}`
+-   **Description:** Retrieves a single hymn by its ID with full song details including lyrics, youtube link, description, and song writer.
+-   **Response:** A JSON object containing the hymn with full song details:
+    ```json
+    {
+        "id": 1,
+        "no": 1,
+        "english_title": "Amazing Grace",
+        "reference_id": 100,
+        "hymn_category": {
+            "id": 1,
+            "name": "Worship"
+        },
+        "song": {
+            "id": 10,
+            "code": 10,
+            "title": "Amazing Grace",
+            "slug": "amazing-grace-10",
+            "youtube": "https://www.youtube.com/watch?v=...",
+            "lyrics": "Amazing grace how sweet the sound\nThat saved a wretch like me\nI once was lost but now am found\nWas blind but now I see",
+            "description": "A description of the song.",
+            "song_writer": "John Newton"
+        },
+        "created_at": "2026-01-15T10:00:00.000000Z",
+        "updated_at": "2026-01-15T10:00:00.000000Z"
+    }
+    ```
+
+### List Hymn Categories
+
+-   **Endpoint:** `GET /api/hymn-categories`
+-   **Description:** Retrieves a list of all hymn categories for filtering.
+-   **Response:** A JSON array of hymn category objects:
+    ```json
+    [
+        {
+            "id": 1,
+            "name": "Worship"
+        },
+        {
+            "id": 2,
+            "name": "Praise"
+        }
+    ]
+    ```
+
+### Get Hymn Filters
+
+-   **Endpoint:** `GET /api/hymn-filters`
+-   **Description:** Retrieves available filters for hymns (hymn categories) for the search/filter screen.
+-   **Response:** A JSON object containing available filters:
+    ```json
+    {
+        "hymn_categories": [
+            {
+                "id": 1,
+                "name": "Worship"
+            },
+            {
+                "id": 2,
+                "name": "Praise"
+            }
+        ]
+    }
+    ```
+
 ## Suggest Songs
 
 ### Submit Song Suggestion
