@@ -25,7 +25,10 @@ class HymnController extends Controller
                     if (is_numeric($search)) {
                         $q->where('no', $search);
                     } else {
-                        $q->where('english_title', 'like', "%{$search}%");
+                        $q->where('english_title', 'like', "%{$search}%")
+                            ->orWhereHas('song', function ($songQuery) use ($search) {
+                                $songQuery->where('title', 'like', "%{$search}%");
+                            });
                     }
                 })
                 ->when($request->hymn_category_id, function ($q, $categoryId) {
