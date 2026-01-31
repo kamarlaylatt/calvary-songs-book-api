@@ -8,13 +8,13 @@ use App\Http\Controllers\Api\User\VersionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
-    require __DIR__.'/admin.php';
+    require __DIR__ . '/admin.php';
 });
 
 Route::post('/login', [AuthController::class, 'login']);
 
 // Public APIs
-// Route::get('/songs', [SongController::class, 'index']);
+Route::get('/songs', [SongController::class, 'index']);
 Route::get('/songs/{song:slug}', [SongController::class, 'show']);
 Route::get('/categories', [SongController::class, 'categories']);
 Route::get('/search-filters', [SongController::class, 'searchFilters']);
