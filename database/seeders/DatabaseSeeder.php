@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AdminSeeder::class,
             UserSeeder::class,
-            CategorySeeder::class,
-            SongLanguageSeeder::class,
-            AppVersionSeeder::class,
+            // CategorySeeder::class,
+            // SongLanguageSeeder::class,
+            // AppVersionSeeder::class,
         ]);
     }
 }

@@ -1,17 +1,5 @@
 {
   "mcpServers": {
-    "laravel-boost": {
-      "command": "php",
-      "args": [
-        "./artisan",
-        "boost:mcp"
-      ],
-      "disabled": false,
-      "timeout": 60,
-      "alwaysAllow": [
-        "count_model_records"
-      ]
-    },
     "postgres": {
       "command": "npx",
       "args": [

@@ -23,38 +23,64 @@ class SongController extends Controller
                     $query->where('id', $id);
                 })
                 ->when($request->search, function ($query, $search) {
-                    $query->where(function ($q) use ($search) {
-                        $q->where('title', 'like', "%{$search}%");
-                    })->orWhere(function ($q) use ($search) {
-                        $q->where('lyrics', 'like', "%{$search}%");
-                        // $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
-                    });
+                    $query
+                        ->where(function ($q) use ($search) {
+                            $q->where('title', 'like', "%{$search}%");
+                        })
+                        ->orWhere(function ($q) use ($search) {
+                            $q->where('lyrics', 'like', "%{$search}%");
+                            // $q->whereFullText(['lyrics'], $search, ['mode' => 'boolean']);
+                        });
                 })
                 ->when($request->style_id, function ($query, $styleId) {
                     $query->where('style_id', $styleId);
                 })
                 ->when($request->category_ids, function ($query, $categoryIds) {
-                    $query->whereHas('categories', function ($q) use ($categoryIds) {
-                        $q->whereIn('categories.id', is_array($categoryIds) ? $categoryIds : [$categoryIds]);
+                    $query->whereHas('categories', function ($q) use (
+                        $categoryIds,
+                    ) {
+                        $q->whereIn(
+                            'categories.id',
+                            is_array($categoryIds)
+                                ? $categoryIds
+                                : [$categoryIds],
+                        );
                     });
                 })
-                ->when($request->song_language_ids, function ($query, $songLanguageIds) {
-                    $query->whereHas('songLanguages', function ($q) use ($songLanguageIds) {
-                        $q->whereIn('song_languages.id', is_array($songLanguageIds) ? $songLanguageIds : [$songLanguageIds]);
+                ->when($request->song_language_ids, function (
+                    $query,
+                    $songLanguageIds,
+                ) {
+                    $query->whereHas('songLanguages', function ($q) use (
+                        $songLanguageIds,
+                    ) {
+                        $q->whereIn(
+                            'song_languages.id',
+                            is_array($songLanguageIds)
+                                ? $songLanguageIds
+                                : [$songLanguageIds],
+                        );
                     });
                 })
                 ->with(['style', 'categories', 'songLanguages'])
-                ->when($request->has('sort_by') && $request->has('sort_order'), function ($query) use ($request) {
-                    $sortBy = $request->sort_by;
-                    $sortOrder = $request->sort_order === 'asc' ? 'asc' : 'desc';
+                ->when(
+                    $request->has('sort_by') && $request->has('sort_order'),
+                    function ($query) use ($request) {
+                        $sortBy = $request->sort_by;
+                        $sortOrder =
+                            $request->sort_order === 'asc' ? 'asc' : 'desc';
 
-                    if (in_array($sortBy, ['created_at', 'id'])) {
-                        $query->orderBy($sortBy, $sortOrder);
-                    }
-                })
-                ->when(! ($request->has('sort_by') && $request->has('sort_order')), function ($query) {
-                    $query->orderByDesc('created_at')->orderByDesc('id');
-                })
+                        if (in_array($sortBy, ['created_at', 'id'])) {
+                            $query->orderBy($sortBy, $sortOrder);
+                        }
+                    },
+                )
+                ->when(
+                    ! ($request->has('sort_by') && $request->has('sort_order')),
+                    function ($query) {
+                        $query->orderByDesc('created_at')->orderByDesc('id');
+                    },
+                )
                 ->paginate(15);
         });
 
@@ -87,10 +113,12 @@ class SongController extends Controller
         $admin = auth('admin')->user();
         $nextCode = Song::nextCode();
 
-        $song = $admin->songs()->create($validated + [
-            'code' => $nextCode,
-            'slug' => Song::generateSlug($request->title, $nextCode),
-        ]);
+        $song = $admin->songs()->create(
+            $validated + [
+                'code' => $nextCode,
+                'slug' => Song::generateSlug($request->title, $nextCode),
+            ],
+        );
 
         if ($request->has('category_ids')) {
             $song->categories()->sync($request->category_ids);
@@ -102,7 +130,10 @@ class SongController extends Controller
 
         $this->clearSongCaches();
 
-        return response()->json($song->load(['style', 'categories', 'songLanguages']), 201);
+        return response()->json(
+            $song->load(['style', 'categories', 'songLanguages']),
+            201,
+        );
     }
 
     /**
@@ -110,7 +141,9 @@ class SongController extends Controller
      */
     public function show(Song $song)
     {
-        return response()->json($song->load(['style', 'categories', 'songLanguages']));
+        return response()->json(
+            $song->load(['style', 'categories', 'songLanguages']),
+        );
     }
 
     /**
@@ -135,7 +168,11 @@ class SongController extends Controller
 
         $this->authorize('update', $song);
 
-        $song->update($validated + ['slug' => Song::generateSlug($request->title, $song->code)]);
+        $song->update(
+            $validated + [
+                'slug' => Song::generateSlug($request->title, $song->code),
+            ],
+        );
 
         if ($request->has('category_ids')) {
             $song->categories()->sync($request->category_ids);
@@ -147,7 +184,9 @@ class SongController extends Controller
 
         $this->clearSongCaches();
 
-        return response()->json($song->load(['style', 'categories', 'songLanguages']));
+        return response()->json(
+            $song->load(['style', 'categories', 'songLanguages']),
+        );
     }
 
     /**

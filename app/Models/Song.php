@@ -76,4 +76,9 @@ class Song extends Model
     {
         return $this->belongsToMany(SongLanguage::class);
     }
+
+    public function hymns()
+    {
+        return $this->hasMany(Hymn::class);
+    }
 }

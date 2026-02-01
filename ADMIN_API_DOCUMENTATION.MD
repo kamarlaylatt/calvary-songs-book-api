@@ -1075,4 +1075,342 @@ This documentation provides details about the available API endpoints for admini
 -   **Description:** Deletes an app version.
 -   **Authentication:** Bearer Token
 -   **Response:** `204 No Content`
-```
+
+## Hymn Categories
+
+### List Hymn Categories
+
+-   **Endpoint:** `GET /api/admin/hymn-categories`
+-   **Description:** Retrieves a paginated list of hymn categories.
+-   **Authentication:** Bearer Token
+-   **Query Parameters:**
+    -   `search` (optional): Search by category name.
+    -   `sort_by` (optional): Field to sort by (supported: 'name', 'created_at', 'id').
+    -   `sort_order` (optional): Sort direction ('asc' or 'desc').
+-   **Response:** A paginated JSON object:
+    ```json
+    {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 1,
+                "name": "Worship",
+                "created_at": "2025-01-14T18:00:00.000000Z",
+                "updated_at": "2025-01-14T18:00:00.000000Z"
+            },
+            {
+                "id": 2,
+                "name": "Praise",
+                "created_at": "2025-01-14T18:05:00.000000Z",
+                "updated_at": "2025-01-14T18:05:00.000000Z"
+            }
+        ],
+        "first_page_url": "http://localhost/api/admin/hymn-categories?page=1",
+        "from": 1,
+        "last_page": 1,
+        "last_page_url": "http://localhost/api/admin/hymn-categories?page=1",
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/admin/hymn-categories?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "next_page_url": null,
+        "path": "http://localhost/api/admin/hymn-categories",
+        "per_page": 15,
+        "prev_page_url": null,
+        "to": 2,
+        "total": 2
+    }
+    ```
+
+### Create Hymn Category
+
+-   **Endpoint:** `POST /api/admin/hymn-categories`
+-   **Description:** Creates a new hymn category.
+-   **Authentication:** Bearer Token
+-   **Request Body:**
+    ```json
+    {
+        "name": "Worship"
+    }
+    ```
+-   **Response:** The newly created hymn category object:
+    ```json
+    {
+        "id": 1,
+        "name": "Worship",
+        "created_at": "2025-01-14T18:00:00.000000Z",
+        "updated_at": "2025-01-14T18:00:00.000000Z"
+    }
+    ```
+
+### Show Hymn Category
+
+-   **Endpoint:** `GET /api/admin/hymn-categories/{hymnCategory}`
+-   **Description:** Retrieves a single hymn category by its ID with associated hymns.
+-   **Authentication:** Bearer Token
+-   **Response:** The hymn category object with hymns:
+    ```json
+    {
+        "id": 1,
+        "name": "Worship",
+        "created_at": "2025-01-14T18:00:00.000000Z",
+        "updated_at": "2025-01-14T18:00:00.000000Z",
+        "hymns": [
+            {
+                "id": 1,
+                "no": 1,
+                "hymn_category_id": 1,
+                "song_id": 10,
+                "reference_id": 100,
+                "english_title": "Amazing Grace",
+                "created_at": "2025-01-14T18:10:00.000000Z",
+                "updated_at": "2025-01-14T18:10:00.000000Z"
+            }
+        ]
+    }
+    ```
+
+### Update Hymn Category
+
+-   **Endpoint:** `PUT/PATCH /api/admin/hymn-categories/{hymnCategory}`
+-   **Description:** Updates an existing hymn category.
+-   **Authentication:** Bearer Token
+-   **Request Body:** (same as create, but fields are optional)
+    ```json
+    {
+        "name": "Worship and Adoration"
+    }
+    ```
+-   **Response:** The updated hymn category object:
+    ```json
+    {
+        "id": 1,
+        "name": "Worship and Adoration",
+        "created_at": "2025-01-14T18:00:00.000000Z",
+        "updated_at": "2025-01-14T18:15:00.000000Z"
+    }
+    ```
+
+### Delete Hymn Category
+
+-   **Endpoint:** `DELETE /api/admin/hymn-categories/{hymnCategory}`
+-   **Description:** Deletes a hymn category.
+-   **Authentication:** Bearer Token
+-   **Response:** `204 No Content`
+
+## Hymns
+
+### List Hymns
+
+-   **Endpoint:** `GET /api/admin/hymns`
+-   **Description:** Retrieves a paginated list of hymns.
+-   **Authentication:** Bearer Token
+-   **Query Parameters:**
+    -   `id` (optional): Filter hymns by specific ID.
+    -   `no` (optional): Filter by hymn number.
+    -   `search` (optional): Search in English title.
+    -   `hymn_category_id` (optional): Filter by hymn category ID.
+    -   `song_id` (optional): Filter by associated song ID.
+    -   `sort_by` (optional): Field to sort by (supported: 'no', 'created_at', 'id', 'reference_id').
+    -   `sort_order` (optional): Sort direction ('asc' or 'desc').
+-   **Response:** A paginated JSON object:
+    ```json
+    {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 1,
+                "no": 1,
+                "hymn_category_id": 1,
+                "song_id": 10,
+                "reference_id": 100,
+                "english_title": "Amazing Grace",
+                "created_at": "2025-01-14T18:10:00.000000Z",
+                "updated_at": "2025-01-14T18:10:00.000000Z",
+                "hymn_category": {
+                    "id": 1,
+                    "name": "Worship",
+                    "created_at": "2025-01-14T18:00:00.000000Z",
+                    "updated_at": "2025-01-14T18:00:00.000000Z"
+                },
+                "song": {
+                    "id": 10,
+                    "title": "Amazing Grace",
+                    "code": 10,
+                    "slug": "amazing-grace-10",
+                    "created_at": "2025-01-14T18:05:00.000000Z",
+                    "updated_at": "2025-01-14T18:05:00.000000Z"
+                }
+            }
+        ],
+        "first_page_url": "http://localhost/api/admin/hymns?page=1",
+        "from": 1,
+        "last_page": 1,
+        "last_page_url": "http://localhost/api/admin/hymns?page=1",
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/admin/hymns?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "next_page_url": null,
+        "path": "http://localhost/api/admin/hymns",
+        "per_page": 15,
+        "prev_page_url": null,
+        "to": 1,
+        "total": 1
+    }
+    ```
+
+### Create Hymn
+
+-   **Endpoint:** `POST /api/admin/hymns`
+-   **Description:** Creates a new hymn.
+-   **Authentication:** Bearer Token
+-   **Request Body:**
+    ```json
+    {
+        "no": 1,
+        "hymn_category_id": 1,
+        "song_id": 10,
+        "reference_id": 100,
+        "english_title": "Amazing Grace"
+    }
+    ```
+    -   `no` (required): Hymn number (integer, min: 1)
+    -   `hymn_category_id` (required): ID of the hymn category (must exist in hymn_categories table)
+    -   `song_id` (optional): ID of the associated song (must exist in songs table)
+    -   `reference_id` (optional): Reference ID (integer, min: 1)
+    -   `english_title` (optional): English title of the hymn (string, max: 255)
+-   **Response:** The newly created hymn object:
+    ```json
+    {
+        "id": 1,
+        "no": 1,
+        "hymn_category_id": 1,
+        "song_id": 10,
+        "reference_id": 100,
+        "english_title": "Amazing Grace",
+        "created_at": "2025-01-14T18:10:00.000000Z",
+        "updated_at": "2025-01-14T18:10:00.000000Z",
+        "hymn_category": {
+            "id": 1,
+            "name": "Worship",
+            "created_at": "2025-01-14T18:00:00.000000Z",
+            "updated_at": "2025-01-14T18:00:00.000000Z"
+        },
+        "song": {
+            "id": 10,
+            "title": "Amazing Grace",
+            "code": 10,
+            "slug": "amazing-grace-10",
+            "created_at": "2025-01-14T18:05:00.000000Z",
+            "updated_at": "2025-01-14T18:05:00.000000Z"
+        }
+    }
+    ```
+
+### Show Hymn
+
+-   **Endpoint:** `GET /api/admin/hymns/{hymn}`
+-   **Description:** Retrieves a single hymn by its ID.
+-   **Authentication:** Bearer Token
+-   **Response:** The hymn object with related data:
+    ```json
+    {
+        "id": 1,
+        "no": 1,
+        "hymn_category_id": 1,
+        "song_id": 10,
+        "reference_id": 100,
+        "english_title": "Amazing Grace",
+        "created_at": "2025-01-14T18:10:00.000000Z",
+        "updated_at": "2025-01-14T18:10:00.000000Z",
+        "hymn_category": {
+            "id": 1,
+            "name": "Worship",
+            "created_at": "2025-01-14T18:00:00.000000Z",
+            "updated_at": "2025-01-14T18:00:00.000000Z"
+        },
+        "song": {
+            "id": 10,
+            "title": "Amazing Grace",
+            "code": 10,
+            "slug": "amazing-grace-10",
+            "created_at": "2025-01-14T18:05:00.000000Z",
+            "updated_at": "2025-01-14T18:05:00.000000Z"
+        }
+    }
+    ```
+
+### Update Hymn
+
+-   **Endpoint:** `PUT/PATCH /api/admin/hymns/{hymn}`
+-   **Description:** Updates an existing hymn.
+-   **Authentication:** Bearer Token
+-   **Request Body:** (same as create, but all fields are optional; `no` and `hymn_category_id` are required when provided)
+    ```json
+    {
+        "no": 2,
+        "english_title": "Amazing Grace - Updated",
+        "reference_id": 101
+    }
+    ```
+-   **Response:** The updated hymn object:
+    ```json
+    {
+        "id": 1,
+        "no": 2,
+        "hymn_category_id": 1,
+        "song_id": 10,
+        "reference_id": 101,
+        "english_title": "Amazing Grace - Updated",
+        "created_at": "2025-01-14T18:10:00.000000Z",
+        "updated_at": "2025-01-14T18:20:00.000000Z",
+        "hymn_category": {
+            "id": 1,
+            "name": "Worship",
+            "created_at": "2025-01-14T18:00:00.000000Z",
+            "updated_at": "2025-01-14T18:00:00.000000Z"
+        },
+        "song": {
+            "id": 10,
+            "title": "Amazing Grace",
+            "code": 10,
+            "slug": "amazing-grace-10",
+            "created_at": "2025-01-14T18:05:00.000000Z",
+            "updated_at": "2025-01-14T18:05:00.000000Z"
+        }
+    }
+    ```
+
+### Delete Hymn
+
+-   **Endpoint:** `DELETE /api/admin/hymns/{hymn}`
+-   **Description:** Deletes a hymn.
+-   **Authentication:** Bearer Token
+-   **Response:** `204 No Content`
