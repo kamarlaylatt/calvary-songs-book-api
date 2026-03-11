@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\User\HymnIndexRequest;
 use App\Models\Hymn;
 use App\Models\HymnCategory;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class HymnController extends Controller
@@ -13,9 +13,9 @@ class HymnController extends Controller
     /**
      * Display a listing of hymns for mobile users.
      */
-    public function index(Request $request)
+    public function index(HymnIndexRequest $request)
     {
-        $cacheKey = 'hymns.index.'.http_build_query($request->all());
+        $cacheKey = 'hymns.index.'.md5(http_build_query($request->all()));
         $cacheDuration = 60 * 30; // 30 minutes
 
         $hymns = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
